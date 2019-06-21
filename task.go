@@ -35,11 +35,19 @@ func (gi *GirImage) Resize() (string, error) {
 	}
 }
 
+// saveRs save resize result
+type saveRs struct {
+	save string
+	w    uint
+	h    uint
+}
+
 // GirTask used for collect image resize, dispatching resize image task, got the save result or fail info from channel
 type GirTask struct {
 	images []*GirImage
 	chErr  chan error
-	chSave chan string
+	chSave chan saveRs
+	fin    chan bool
 }
 
 // NewGirTask create an GirTas pointer
@@ -47,7 +55,8 @@ func NewGirTask() *GirTask {
 	return &GirTask{
 		images: []*GirImage{},
 		chErr:  make(chan error),
-		chSave: make(chan string),
+		chSave: make(chan saveRs),
+		fin:    make(chan bool),
 	}
 }
 
@@ -65,27 +74,41 @@ func (gt *GirTask) Add(rt ResourceType, data []byte, dst string, width, height u
 	return gt
 }
 
+// IsEmpty check girTask whether is empty
+func (gt *GirTask) IsEmpty() bool {
+	return len(gt.images) == 0
+}
+
 // Report synchronously report success or fail result in background, when gir task is finish
-func (gt *GirTask) Report() {
+func (gt *GirTask) report() {
+	wg := sync.WaitGroup{}
+
 	// report success
+	wg.Add(1)
 	go func() {
-		for save := range gt.chSave {
-			log.Println("resize ok:", save)
+		defer wg.Done()
+		for rs := range gt.chSave {
+			log.Printf("resize ok: %s (inputW=%d,inputH=%d)\n", rs.save, rs.w, rs.h)
 		}
 	}()
 
 	// report fail
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		for err := range gt.chErr {
 			log.Println("resize fail:", err)
 		}
 	}()
+
+	wg.Wait()
+	gt.fin <- true
 }
 
 // ResizeImages concurrency resize image in it's GirImage slice
 func (gt *GirTask) DoResize() {
 	// report in background
-	gt.Report()
+	gt.report()
 
 	// concurrency task working
 	wg := sync.WaitGroup{}
@@ -98,10 +121,17 @@ func (gt *GirTask) DoResize() {
 				gt.chErr <- err
 				return
 			}
-			gt.chSave <- save
+			gt.chSave <- saveRs{
+				save,
+				gi.width,
+				gi.height,
+			}
 		}(gti)
 	}
 
 	// wait for all task finished
 	wg.Wait()
+	close(gt.chErr)
+	close(gt.chSave)
+	<-gt.fin
 }

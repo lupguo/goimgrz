@@ -1,3 +1,63 @@
+## Girls
+Girls is short for **Go Image Resize List**, It is used to resize network or local images
+
+## Go build
+```
+go install ./girls
+```
+
+## Cmdline Help
+
+```
+$ girls -h
+Usage of girls:
+  -crawler_url string
+    	the crawler url used by girls download the http images and resize only matched image files
+  -dir string
+    	the dir path where image inside to be resize
+  -dst string
+    	the output dir where image after  resize  store (default "/tmp")
+  -height uint
+    	set resize image's height
+  -img_url string
+    	the http(s) url  of image which to be resize, image resource(url|dirname|filename) at least need set one
+  -local_img string
+    	the local image which to be resize
+  -match string
+    	only matched image will to be resize (default "*")
+  -quality uint
+    	set resize image's quality percent (default 75)
+  -water_img string
+    	append water image
+  -width uint
+    	set resize image's width (default 300)
+```
+
+The `-crawler_url`、`quality`、`water_img` is developing, it will finished
+soon（now is unavailable） 
+
+## Example
+
+### girls resize local dir images
+```
+$ girls -dir /data/github.com/go/studious/golang/ -dst /data/github.com/go/studious/golang/600 -width 600
+2019/06/21 23:17:43 resize ok: /data/github.com/go/studious/golang/600/golang.org_x_icmp.png (inputW=600,inputH=0)
+2019/06/21 23:17:43 resize ok: /data/github.com/go/studious/golang/600/golang.org_strings.png (inputW=600,inputH=0)
+2019/06/21 23:17:43 resize ok: /data/github.com/go/studious/golang/600/golang.org_regexp.png (inputW=600,inputH=0)
+2019/06/21 23:17:44 resize ok: /data/github.com/go/studious/golang/600/golang.org_bufio.png (inputW=600,inputH=0)
+2019/06/21 23:17:44 resize ok: /data/github.com/go/studious/golang/600/golang.org_x_fmt.png (inputW=600,inputH=0)
+2019/06/21 23:17:45 resize ok: /data/github.com/go/studious/golang/600/golang.org_flag.png (inputW=600,inputH=0)
+2019/06/21 23:17:45 resize ok: /data/github.com/go/studious/golang/600/golang.org_time.png (inputW=600,inputH=0)
+2019/06/21 23:17:45 resize ok: /data/github.com/go/studious/golang/600/golang.org_io.png (inputW=600,inputH=0)
+2019/06/21 23:17:46 resize ok: /data/github.com/go/studious/golang/600/golang.org_image.png (inputW=600,inputH=0)
+2019/06/21 23:17:47 resize ok: /data/github.com/go/studious/golang/600/golang.org_database_sql.png (inputW=600,inputH=0)
+2019/06/21 23:17:47 resize ok: /data/github.com/go/studious/golang/600/golang.org_os(os,file,path).png (inputW=600,inputH=0)
+```
+
+### girls resize http image
+
+
+
 ## TestCase
 
 ### Test resize local image
@@ -33,3 +93,8 @@ PASS
 --- PASS: TestGirTask_ResizeImages (2.48s)
 PASS
 ```
+
+## Bug
+1. Now, http image download is no timeout(used default Http Client), this will
+   change soon
+2. Save path have an same filename will be cover

@@ -3,7 +3,7 @@ package girls
 import "testing"
 
 func TestGetLocalImages(t *testing.T) {
-	imgs, err := GetLocalDirImages("./testdata", "*")
+	imgs, err := GetImagesFromDir("./testdata", "*")
 	if err != nil {
 		t.Error(err)
 	}
