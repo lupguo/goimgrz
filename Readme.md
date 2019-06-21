@@ -1,5 +1,6 @@
 ## Girls
-Girls is short for **Go Image Resize List**, It is used to resize network or local images
+Girls is not girl, it just short for **Go Image Resize List**, It is used
+to resize network or local images
 
 ## Go build
 ```
@@ -33,8 +34,14 @@ Usage of girls:
     	set resize image's width (default 300)
 ```
 
-The `-crawler_url`、`quality`、`water_img` is developing, it will finished
-soon（now is unavailable） 
+The `-crawler_url`、`quality`、`water_img` is developing, it will finished 
+soon（now is unavailable）
+
+Support image type:
+
+- jpeg
+- png
+- gif
 
 ## Example
 
@@ -55,6 +62,12 @@ $ girls -dir /data/github.com/go/studious/golang/ -dst /data/github.com/go/studi
 ```
 
 ### girls resize http image
+```
+$ girls -img_url https://physicsworld.com/wp-content/uploads/2006/09/LLOYDblack-hole-635x496.jpg -dir /tmp
+2019/06/22 00:08:26 resize ok: /tmp/LLOYDblack-hole-635x496.jpg (inputW=300,inputH=0)
+```
+
+### Support 
 
 
 
@@ -95,6 +108,5 @@ PASS
 ```
 
 ## Bug
-1. Now, http image download is no timeout(used default Http Client), this will
-   change soon
+1. Now, http image download is no timeout(used default Http Client), this will change soon
 2. Save path have an same filename will be cover

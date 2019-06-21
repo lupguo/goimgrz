@@ -101,6 +101,7 @@ func (gt *GirTask) report() {
 		}
 	}()
 
+
 	wg.Wait()
 	gt.fin <- true
 }
@@ -108,7 +109,7 @@ func (gt *GirTask) report() {
 // ResizeImages concurrency resize image in it's GirImage slice
 func (gt *GirTask) DoResize() {
 	// report in background
-	gt.report()
+	go gt.report()
 
 	// concurrency task working
 	wg := sync.WaitGroup{}
@@ -129,9 +130,11 @@ func (gt *GirTask) DoResize() {
 		}(gti)
 	}
 
-	// wait for all task finished
+	// wait for all task finished them close chan to report stop the goroutine
 	wg.Wait()
 	close(gt.chErr)
 	close(gt.chSave)
+
+	// wait fin msg
 	<-gt.fin
 }
