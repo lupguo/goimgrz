@@ -27,7 +27,7 @@ type GirError struct {
 }
 
 func (e GirError) Error() string {
-	return fmt.Sprintf("error(%d): %s: %s", e.No, e.Mark, e.Msg)
+	return fmt.Sprintf("error(%d): %s, %s", e.No, e.Mark, e.Msg)
 }
 
 // new girls error

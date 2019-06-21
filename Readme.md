@@ -47,18 +47,18 @@ Support image type:
 
 ### girls resize local dir images
 ```
-$ girls -dir /data/github.com/go/studious/golang/ -dst /data/github.com/go/studious/golang/600 -width 600
-2019/06/21 23:17:43 resize ok: /data/github.com/go/studious/golang/600/golang.org_x_icmp.png (inputW=600,inputH=0)
-2019/06/21 23:17:43 resize ok: /data/github.com/go/studious/golang/600/golang.org_strings.png (inputW=600,inputH=0)
-2019/06/21 23:17:43 resize ok: /data/github.com/go/studious/golang/600/golang.org_regexp.png (inputW=600,inputH=0)
-2019/06/21 23:17:44 resize ok: /data/github.com/go/studious/golang/600/golang.org_bufio.png (inputW=600,inputH=0)
-2019/06/21 23:17:44 resize ok: /data/github.com/go/studious/golang/600/golang.org_x_fmt.png (inputW=600,inputH=0)
-2019/06/21 23:17:45 resize ok: /data/github.com/go/studious/golang/600/golang.org_flag.png (inputW=600,inputH=0)
-2019/06/21 23:17:45 resize ok: /data/github.com/go/studious/golang/600/golang.org_time.png (inputW=600,inputH=0)
-2019/06/21 23:17:45 resize ok: /data/github.com/go/studious/golang/600/golang.org_io.png (inputW=600,inputH=0)
-2019/06/21 23:17:46 resize ok: /data/github.com/go/studious/golang/600/golang.org_image.png (inputW=600,inputH=0)
-2019/06/21 23:17:47 resize ok: /data/github.com/go/studious/golang/600/golang.org_database_sql.png (inputW=600,inputH=0)
-2019/06/21 23:17:47 resize ok: /data/github.com/go/studious/golang/600/golang.org_os(os,file,path).png (inputW=600,inputH=0)
+$ girls -dir ./mindnode -width 1200 -dst golang
+2019/06/22 00:31:16 resize ok: golang/golang.org_x_icmp.png (inputW=1200,inputH=0)
+2019/06/22 00:31:16 resize ok: golang/golang.org_bufio.png (inputW=1200,inputH=0)
+2019/06/22 00:31:16 resize ok: golang/golang.org_regexp.png (inputW=1200,inputH=0)
+2019/06/22 00:31:17 resize ok: golang/golang.org_strings.png (inputW=1200,inputH=0)
+2019/06/22 00:31:18 resize ok: golang/golang.org_x_fmt.png (inputW=1200,inputH=0)
+2019/06/22 00:31:18 resize ok: golang/golang.org_time.png (inputW=1200,inputH=0)
+2019/06/22 00:31:18 resize ok: golang/golang.org_flag.png (inputW=1200,inputH=0)
+2019/06/22 00:31:18 resize ok: golang/golang.org_io.png (inputW=1200,inputH=0)
+2019/06/22 00:31:19 resize ok: golang/golang.org_image.png (inputW=1200,inputH=0)
+2019/06/22 00:31:21 resize ok: golang/golang.org_database_sql.png (inputW=1200,inputH=0)
+2019/06/22 00:31:21 resize ok: golang/golang.org_os(os,file,path).png (inputW=1200,inputH=0)
 ```
 
 ### girls resize http image

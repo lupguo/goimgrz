@@ -57,7 +57,7 @@ func resizeImage(imageData io.Reader, dst, filename string, width, height uint) 
 	case "png":
 		err = png.Encode(newFile, newImg)
 	case "jpeg":
-		err = jpeg.Encode(newFile, newImg, &jpeg.Options{75})
+		err = jpeg.Encode(newFile, newImg, &jpeg.Options{85})
 	case "gif":
 		err = gif.Encode(newFile, newImg, nil)
 	default:

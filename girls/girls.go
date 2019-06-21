@@ -63,7 +63,7 @@ func main() {
 
 	// resize signal local image file
 	if Cmdline.filename != "" {
-		gt.Add(girls.ResTypeLocal, []byte(Cmdline.dirname), dst, w, h)
+		gt.Add(girls.ResTypeLocal, []byte(Cmdline.filename), dst, w, h)
 	}
 
 	// resize all image in directory and sub subdirectory
