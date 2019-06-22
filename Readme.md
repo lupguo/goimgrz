@@ -116,4 +116,3 @@ PASS
 
 ## Bug
 1. Now, http image download is no timeout(used default Http Client), this will change soon
-2. Save path have an same filename will be cover
