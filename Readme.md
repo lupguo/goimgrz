@@ -2,13 +2,12 @@
 Girls is not girl, it just short for **Go Image Resize List**, It is used
 to resize network or local images
 
-## Go build
+## Install
 ```
-go install ./girls
+go install github.com/tkstorm/girls
 ```
 
-## Cmdline Help
-
+### Help
 ```
 $ girls -h
 Usage of girls:
