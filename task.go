@@ -1,4 +1,4 @@
-package girls
+package main
 
 import (
 	"log"

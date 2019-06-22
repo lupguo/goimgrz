@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"girls"
 	"log"
 )
 
@@ -54,14 +53,14 @@ func main() {
 	flag.Parse()
 
 	// create gir task
-	gt := girls.NewGirTask()
+	gt := NewGirTask()
 	dst := Cmdline.dst
 	w := Cmdline.width
 	h := Cmdline.height
 
 	// resize http url image
 	if Cmdline.url != "" {
-		gt.Add(girls.ResTypeHttp, []byte(Cmdline.url), dst, w, h)
+		gt.Add(ResTypeHttp, []byte(Cmdline.url), dst, w, h)
 	}
 
 	// resize http url image list
@@ -71,7 +70,7 @@ func main() {
 
 	// resize signal local image file
 	if Cmdline.filename != "" {
-		gt.Add(girls.ResTypeLocal, []byte(Cmdline.filename), dst, w, h)
+		gt.Add(ResTypeLocal, []byte(Cmdline.filename), dst, w, h)
 	}
 
 	// resize all image in directory and sub subdirectory
