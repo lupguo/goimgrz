@@ -1,11 +1,10 @@
 ## Girls
-Girls is not girl, it just short for **Go Image Resize List**, It is used
-to resize network or local images
+Girls is not girl, it just short for **Go Image Resize List**, It is used for
+resize network or local images to specified size and destination
 
 ## Install
 ```
 go get -v github.com/tkstorm/girls
-
 ```
 
 ## Help
@@ -47,29 +46,43 @@ Support image type:
 
 ## Example
 
-### girls resize local dir images
+### 1. girls resize single local image
 ```
-$ girls -scan_dir ./mindnode -width 600 -dst /tmp/mindnode_600
-2019/06/22 12:36:34 resize ok: /tmp/mindnode_600/golang.org_x_icmp.png (inputW=600,inputH=0)
-2019/06/22 12:36:34 resize ok: /tmp/mindnode_600/golang.org_regexp.png (inputW=600,inputH=0)
-2019/06/22 12:36:34 resize ok: /tmp/mindnode_600/golang.org_strings.png (inputW=600,inputH=0)
-2019/06/22 12:36:34 resize ok: /tmp/mindnode_600/golang.org_bufio.png (inputW=600,inputH=0)
-2019/06/22 12:36:35 resize ok: /tmp/mindnode_600/golang.org_x_fmt.png (inputW=600,inputH=0)
-2019/06/22 12:36:35 resize ok: /tmp/mindnode_600/golang.org_time.png (inputW=600,inputH=0)
-2019/06/22 12:36:36 resize ok: /tmp/mindnode_600/golang.org_flag.png (inputW=600,inputH=0)
-2019/06/22 12:36:36 resize ok: /tmp/mindnode_600/golang.org_io.png (inputW=600,inputH=0)
-2019/06/22 12:36:36 resize ok: /tmp/mindnode_600/golang.org_image.png (inputW=600,inputH=0)
-2019/06/22 12:36:37 resize ok: /tmp/mindnode_600/golang.org_database_sql.png (inputW=600,inputH=0)
-2019/06/22 12:36:37 resize ok: /tmp/mindnode_600/golang.org_os(os,file,path).png (inputW=600,inputH=0)
-
-$ girls -scan_dir ./mindnode -width 1200 -dst /tmp
-2019/06/22 12:35:43 error(21): dir is not exist ./mindnode, stat ./mindnode: no such file or directory
+$ girls -img ./testdata/gopher2018.png
+2019/06/22 18:46:45 resize ok: /tmp/gopher2018.png (inputW=300,inputH=0)
 ```
 
-### girls resize http image
+### 2. girls resize local dir images
 ```
-$ girls -img_url https://physicsworld.com/wp-content/uploads/2006/09/LLOYDblack-hole-635x496.jpg -dir /tmp
-2019/06/22 00:08:26 resize ok: /tmp/LLOYDblack-hole-635x496.jpg (inputW=300,inputH=0)
+$ girls -scan_dir ./testdata -width 500 -dst /tmp/resize_500
+2019/06/22 18:47:45 resize ok: /tmp/resize_500/gopher2018.png (inputW=500,inputH=0)
+2019/06/22 18:47:45 resize ok: /tmp/resize_500/web_bg.jpg (inputW=500,inputH=0)
+2019/06/22 18:47:45 resize ok: /tmp/resize_500/IMG_2489.JPG (inputW=500,inputH=0)
+
+$ ll -h ./testdata
+total 4480
+-rw-r--r--@ 1 Terry  access_bpf   1.9M  6 19 02:26 IMG_2489.JPG
+-rw-r--r--@ 1 Terry  staff        106K  9 10  2018 gopher2018.png
+-rw-r--r--@ 1 Terry  staff        186K  4  2 15:04 web_bg.jpg
+
+$ ll -h /tmp/resize_500
+total 416
+-rw-r--r--  1 Terry  wheel    36K  6 22 18:47 IMG_2489.JPG
+-rw-r--r--  1 Terry  wheel    50K  6 22 18:47 gopher2018.png
+-rw-r--r--  1 Terry  wheel   116K  6 22 18:47 web_bg.jpg
+```
+
+### 3. Girls resize http url image
+```
+$ girls -url https://cdn-images-1.medium.com/max/1600/1\*n1kWgo0dPS80uoE430hqSQ.jpeg -width 300
+2019/06/22 18:42:17 resize ok: /tmp/1*n1kWgo0dPS80uoE430hqSQ.jpeg (inputW=300,inputH=0)
+```
+
+### 4. Girls resize batch http url image
+```
+$ girls -urls https://cdn-images-1.medium.com/max/1600/1\*k74qnaAcJd3bzRj7PnLIbg.jpeg,https://cdn-images-1.medium.com/max/2600/0\*jraDH1ztolpSmT9I
+2019/06/22 18:49:29 resize ok: /tmp/1*k74qnaAcJd3bzRj7PnLIbg.jpeg (inputW=300,inputH=0)
+2019/06/22 18:49:30 resize ok: /tmp/0*jraDH1ztolpSmT9I (inputW=300,inputH=0)
 ```
 
 ### Support 
