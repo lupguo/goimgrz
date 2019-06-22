@@ -4,7 +4,8 @@ to resize network or local images
 
 ## Install
 ```
-go install github.com/tkstorm/girls
+go get -v github.com/tkstorm/girls
+
 ```
 
 ## Help

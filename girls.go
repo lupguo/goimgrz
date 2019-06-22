@@ -80,6 +80,7 @@ func main() {
 
 	// check workload
 	if gt.IsEmpty() {
+		flag.PrintDefaults()
 		log.Fatalln("resize image task is empty, check the parameters")
 	}
 
