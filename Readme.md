@@ -7,7 +7,7 @@ to resize network or local images
 go install github.com/tkstorm/girls
 ```
 
-### Help
+## Help
 ```
 $ girls -h
 Usage of girls:
@@ -70,7 +70,6 @@ $ girls -scan_dir ./mindnode -width 1200 -dst /tmp
 $ girls -img_url https://physicsworld.com/wp-content/uploads/2006/09/LLOYDblack-hole-635x496.jpg -dir /tmp
 2019/06/22 00:08:26 resize ok: /tmp/LLOYDblack-hole-635x496.jpg (inputW=300,inputH=0)
 ```
-
 
 ### Support 
 - jpeg
