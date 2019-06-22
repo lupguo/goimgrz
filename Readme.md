@@ -46,13 +46,13 @@ Support image type:
 
 ## Example
 
-### 1. girls resize single local image
+### 1. Girls resize single local image
 ```
 $ girls -img ./testdata/gopher2018.png
 2019/06/22 18:46:45 resize ok: /tmp/gopher2018.png (inputW=300,inputH=0)
 ```
 
-### 2. girls resize local dir images
+### 2. Girls resize local dir images
 ```
 $ girls -scan_dir ./testdata -width 500 -dst /tmp/resize_500
 2019/06/22 18:47:45 resize ok: /tmp/resize_500/gopher2018.png (inputW=500,inputH=0)
