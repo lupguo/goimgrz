@@ -14,20 +14,22 @@ $ girls -h
 Usage of girls:
   -crawler_url string
     	the crawler url used by girls download the http images and resize only matched image files
-  -dir string
-    	the dir path where image inside to be resize
   -dst string
-    	the output dir where image after  resize  store (default "/tmp")
+    	the output dir where image after resize store (default "/tmp")
   -height uint
     	set resize image's height
-  -img_url string
-    	the http(s) url  of image which to be resize, image resource(url|dirname|filename) at least need set one
-  -local_img string
+  -img string
     	the local image which to be resize
   -match string
     	only matched image will to be resize (default "*")
   -quality uint
     	set resize image's quality percent (default 75)
+  -scan_dir string
+    	scan the dir where image inside to be resize
+  -url string
+    	the http(s) url of image which to be resize, image resource(url|urls|dirname|filename) at least need set one
+  -urls string
+    	the http(s) urls of image which to be resize, separated by ','
   -water_img string
     	append water image
   -width uint
@@ -47,18 +49,21 @@ Support image type:
 
 ### girls resize local dir images
 ```
-$ girls -dir ./mindnode -width 1200 -dst golang
-2019/06/22 00:31:16 resize ok: golang/golang.org_x_icmp.png (inputW=1200,inputH=0)
-2019/06/22 00:31:16 resize ok: golang/golang.org_bufio.png (inputW=1200,inputH=0)
-2019/06/22 00:31:16 resize ok: golang/golang.org_regexp.png (inputW=1200,inputH=0)
-2019/06/22 00:31:17 resize ok: golang/golang.org_strings.png (inputW=1200,inputH=0)
-2019/06/22 00:31:18 resize ok: golang/golang.org_x_fmt.png (inputW=1200,inputH=0)
-2019/06/22 00:31:18 resize ok: golang/golang.org_time.png (inputW=1200,inputH=0)
-2019/06/22 00:31:18 resize ok: golang/golang.org_flag.png (inputW=1200,inputH=0)
-2019/06/22 00:31:18 resize ok: golang/golang.org_io.png (inputW=1200,inputH=0)
-2019/06/22 00:31:19 resize ok: golang/golang.org_image.png (inputW=1200,inputH=0)
-2019/06/22 00:31:21 resize ok: golang/golang.org_database_sql.png (inputW=1200,inputH=0)
-2019/06/22 00:31:21 resize ok: golang/golang.org_os(os,file,path).png (inputW=1200,inputH=0)
+$ girls -scan_dir ./mindnode -width 600 -dst /tmp/mindnode_600
+2019/06/22 12:36:34 resize ok: /tmp/mindnode_600/golang.org_x_icmp.png (inputW=600,inputH=0)
+2019/06/22 12:36:34 resize ok: /tmp/mindnode_600/golang.org_regexp.png (inputW=600,inputH=0)
+2019/06/22 12:36:34 resize ok: /tmp/mindnode_600/golang.org_strings.png (inputW=600,inputH=0)
+2019/06/22 12:36:34 resize ok: /tmp/mindnode_600/golang.org_bufio.png (inputW=600,inputH=0)
+2019/06/22 12:36:35 resize ok: /tmp/mindnode_600/golang.org_x_fmt.png (inputW=600,inputH=0)
+2019/06/22 12:36:35 resize ok: /tmp/mindnode_600/golang.org_time.png (inputW=600,inputH=0)
+2019/06/22 12:36:36 resize ok: /tmp/mindnode_600/golang.org_flag.png (inputW=600,inputH=0)
+2019/06/22 12:36:36 resize ok: /tmp/mindnode_600/golang.org_io.png (inputW=600,inputH=0)
+2019/06/22 12:36:36 resize ok: /tmp/mindnode_600/golang.org_image.png (inputW=600,inputH=0)
+2019/06/22 12:36:37 resize ok: /tmp/mindnode_600/golang.org_database_sql.png (inputW=600,inputH=0)
+2019/06/22 12:36:37 resize ok: /tmp/mindnode_600/golang.org_os(os,file,path).png (inputW=600,inputH=0)
+
+$ girls -scan_dir ./mindnode -width 1200 -dst /tmp
+2019/06/22 12:35:43 error(21): dir is not exist ./mindnode, stat ./mindnode: no such file or directory
 ```
 
 ### girls resize http image
@@ -67,9 +72,11 @@ $ girls -img_url https://physicsworld.com/wp-content/uploads/2006/09/LLOYDblack-
 2019/06/22 00:08:26 resize ok: /tmp/LLOYDblack-hole-635x496.jpg (inputW=300,inputH=0)
 ```
 
+
 ### Support 
-
-
+- jpeg
+- png
+- gif
 
 ## TestCase
 

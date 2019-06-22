@@ -2,6 +2,7 @@ package girls
 
 import (
 	"log"
+	"strings"
 	"sync"
 )
 
@@ -74,6 +75,28 @@ func (gt *GirTask) Add(rt ResourceType, data []byte, dst string, width, height u
 	return gt
 }
 
+// AddUrls specified urls, split it with ',', get url image to gir task, waiting for resize
+func (gt *GirTask) AddUrls(urls string, match string, dst string, width, height uint) *GirTask  {
+	for _, url := range strings.Split(urls, ",") {
+		gt.Add(ResTypeHttp, []byte(url), dst, width, height)
+	}
+
+	return gt
+}
+
+// AddDirname specified dirname, scan images to gir task, waiting for resize
+func (gt *GirTask) AddDirname(dirname string, match string, dst string, width, height uint) *GirTask {
+	imgs, err := GetImagesFromDir(dirname, match)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	for _, img := range imgs {
+		gt.Add(ResTypeLocal, []byte(img), dst, width, height)
+	}
+
+	return gt
+}
+
 // IsEmpty check girTask whether is empty
 func (gt *GirTask) IsEmpty() bool {
 	return len(gt.images) == 0
@@ -100,7 +123,6 @@ func (gt *GirTask) report() {
 			log.Println("resize fail:", err)
 		}
 	}()
-
 
 	wg.Wait()
 	gt.fin <- true

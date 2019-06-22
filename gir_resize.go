@@ -1,6 +1,7 @@
 package girls
 
 import (
+	"fmt"
 	"github.com/nfnt/resize"
 	"image"
 	"image/gif"
@@ -31,6 +32,13 @@ func ResizeHttpImage(imgUrl string, dst string, width, height uint) (string, err
 	}
 	defer resp.Body.Close()
 
+	// status check
+	if resp.StatusCode != 200 {
+		return "", NewError(ErrOpenHttpImage, "http error", fmt.Sprintf("Request Url(%s), StatusCode(%d), Status(%s)",
+			imgUrl, resp.StatusCode, resp.Status))
+	}
+
+	// resize image
 	return resizeImage(resp.Body, dst, resp.Request.URL.Path, width, height)
 }
 

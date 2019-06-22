@@ -19,6 +19,10 @@ func Inlist(str string, strList []string) bool {
 
 // get image files from local path
 func GetImagesFromDir(dirname, pattern string) ([]string, error) {
+	if _, err := os.Stat(dirname); os.IsNotExist(err) {
+		return nil, NewError(ErrGetLocalDirImages, "dir is not exist "+dirname, err.Error())
+	}
+
 	var imgs []string
 	exts := []string{".png", ".jpg", ".jpeg", ".gif", ".webp"}
 
@@ -26,7 +30,7 @@ func GetImagesFromDir(dirname, pattern string) ([]string, error) {
 	walkFn := func(p string, info os.FileInfo, err error) error {
 		// path match
 		mtch, err := path.Match(pattern, info.Name())
-		if err != nil || mtch == false{
+		if err != nil || mtch == false {
 			return err
 		}
 		// append specified extension
@@ -37,7 +41,7 @@ func GetImagesFromDir(dirname, pattern string) ([]string, error) {
 	}
 	err := filepath.Walk(dirname, walkFn)
 	if err != nil {
-		return nil, NewError(ErrGetLocalDirImages, "filepath walk error"+dirname, err.Error())
+		return nil, NewError(ErrGetLocalDirImages, "filepath walk error "+dirname, err.Error())
 	}
 	return imgs, nil
 }

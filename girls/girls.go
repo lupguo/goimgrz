@@ -10,6 +10,7 @@ import (
 var Cmdline struct {
 	// http image
 	url        string // the image's http(s) url which to be resize
+	urls       string // the image's http(s) urls
 	crawlerUrl string // the crawler url used by girls, download http images and resize them
 
 	// local image
@@ -17,7 +18,7 @@ var Cmdline struct {
 	filename string // the image which to be resize
 
 	// necessary parameter
-	dst   string // resize image where store
+	dst   string // resize the image(s) where save to
 	width uint   // resize image's width
 
 	// advanced parameter
@@ -29,15 +30,17 @@ var Cmdline struct {
 
 func init() {
 	// http image
-	flag.StringVar(&Cmdline.url, "img_url", "", "the http(s) url  of image which to be resize, image resource(url|dirname|filename) at least need set one")
+	flag.StringVar(&Cmdline.url, "url", "", "the http(s) url of image which to be resize, "+
+		"image resource(url|urls|dirname|filename) at least need set one")
+	flag.StringVar(&Cmdline.urls, "urls", "", "the http(s) urls of image which to be resize, separated by ','")
 	flag.StringVar(&Cmdline.crawlerUrl, "crawler_url", "", "the crawler url used by girls download the http images and resize only matched image files")
 
 	// local image
-	flag.StringVar(&Cmdline.dirname, "dir", "", "the dir path where image inside to be resize")
-	flag.StringVar(&Cmdline.filename, "local_img", "", "the local image which to be resize")
+	flag.StringVar(&Cmdline.dirname, "scan_dir", "", "scan the dir where image inside to be resize")
+	flag.StringVar(&Cmdline.filename, "img", "", "the local image which to be resize")
 
 	// necessary parameter
-	flag.StringVar(&Cmdline.dst, "dst", "/tmp", "the output dir where image after  resize  store")
+	flag.StringVar(&Cmdline.dst, "dst", "/tmp", "the output dir where image after resize store")
 	flag.UintVar(&Cmdline.width, "width", 300, "set resize image's width")
 
 	// advanced parameter
@@ -52,13 +55,18 @@ func main() {
 
 	// create gir task
 	gt := girls.NewGirTask()
-
-	// resize http url image
 	dst := Cmdline.dst
 	w := Cmdline.width
 	h := Cmdline.height
+
+	// resize http url image
 	if Cmdline.url != "" {
 		gt.Add(girls.ResTypeHttp, []byte(Cmdline.url), dst, w, h)
+	}
+
+	// resize http url image list
+	if Cmdline.urls != "" {
+		gt.AddUrls(Cmdline.urls, Cmdline.match, dst, w, h)
 	}
 
 	// resize signal local image file
@@ -68,16 +76,11 @@ func main() {
 
 	// resize all image in directory and sub subdirectory
 	if Cmdline.dirname != "" {
-		imgs, _ := girls.GetImagesFromDir(Cmdline.dirname, Cmdline.match)
-
-		for _, img := range imgs {
-			gt.Add(girls.ResTypeLocal, []byte(img), dst, w, h)
-		}
+		gt.AddDirname(Cmdline.dirname, Cmdline.match, dst, w, h)
 	}
 
 	// check workload
 	if gt.IsEmpty() {
-		flag.PrintDefaults()
 		log.Fatalln("resize image task is empty, check the parameters")
 	}
 
