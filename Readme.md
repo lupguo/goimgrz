@@ -128,3 +128,11 @@ PASS
 
 ## Bug
 1. Now, http image download is no timeout(used default Http Client), this will change soon
+
+## Todo
+1. Add more image format support. (like webp and svg)
+2. Support crawler_url, convenience for crawler crawl the whole html page
+   image and resize them to an folder
+3. Update the command flag, support short mode
+4. Update Http Url Image download model, support timeout
+5. Support HttpProxy Setting (Because network block)
