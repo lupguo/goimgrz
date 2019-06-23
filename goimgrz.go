@@ -91,7 +91,7 @@ func main() {
 
 	// check gir task
 	if gt.IsEmptyTask() {
-		log.Fatalln("resize image task is empty, check the parameters")
+		log.Fatalln("resize image task is empty, check the parameters or try option -h see more info.")
 	}
 
 	//  do gir task concurrently

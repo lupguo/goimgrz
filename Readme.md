@@ -9,6 +9,7 @@ Please note: the toolkit may continue to make major changes until version 0.1
 ## Install
 ```
 go get -v github.com/tkstorm/goimgrz
+go get -u github.com/tkstorm/goimgrz
 ```
 
 ## Help
@@ -75,6 +76,8 @@ $ goimgrz -dir ./testdata
 $ goimgrz -url https://cdn-images-1.medium.com/max/1600/1\*n1kWgo0dPS80uoE430hqSQ.jpeg -width 300
 2019/06/22 18:42:17 resize ok: /tmp/1*n1kWgo0dPS80uoE430hqSQ.jpeg (inputW=300,inputH=0)
 ```
+
+Tips: Be careful of the special characters in the Url and try to use single quotation marks.
 
 ### 4. goimgrz resize batch http url image
 ```
