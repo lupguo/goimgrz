@@ -37,8 +37,3 @@ func (e GirError) Error() string {
 func NewError(no int, mark, msg string) GirError {
 	return GirError{no, mark, msg}
 }
-
-// error print out
-func ErrorOut(no int, mark, msg string) {
-	fmt.Println(NewError(no, mark, msg))
-}

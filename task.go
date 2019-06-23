@@ -99,7 +99,7 @@ func (gt *GirTask) AddScanDir(dir string) *GirTask {
 }
 
 // IsEmpty check girTask whether is empty
-func (gt *GirTask) IsEmptyTask() bool {
+func (gt *GirTask) EmptyTask() bool {
 	return len(gt.images) == 0
 }
 

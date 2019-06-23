@@ -90,7 +90,7 @@ func main() {
 	}
 
 	// check gir task
-	if gt.IsEmptyTask() {
+	if gt.EmptyTask() {
 		log.Fatalln("resize image task is empty, check the parameters or try option -h see more info.")
 	}
 

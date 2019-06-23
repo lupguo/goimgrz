@@ -72,13 +72,13 @@ func ResizeHttpImg(imgUrl string, dst string, width, height uint) (string, error
 func ResizeImage(imageData io.Reader, dst, filename string, width, height uint) (string, error) {
 	// make sure dst dir exist
 	if err := os.MkdirAll(dst, 0755); err != nil {
-		return "", NewError(ErrResize, "mkdir dst", err.Error())
+		return "", NewError(ErrResize, "in the process of resize image, mkdir dst", err.Error())
 	}
 
 	// decode image
 	img, format, err := image.Decode(imageData)
 	if err != nil {
-		return "", NewError(ErrResize, "decode image", err.Error())
+		return "", NewError(ErrResize, "in the process of resize image, resizing image decode image", err.Error())
 	}
 
 	// resize image
@@ -86,7 +86,12 @@ func ResizeImage(imageData io.Reader, dst, filename string, width, height uint) 
 
 	// encode image
 	save := path.Clean(dst + "/" + path.Base(filename))
-	newFile, _ := os.Create(save)
+	newFile, err := os.Create(save)
+	if err != nil {
+		return "", NewError(ErrResize, "in the process of resize image, resizing image create image", err.Error())
+	}
+	defer newFile.Close()
+
 	switch format {
 	case "png":
 		err = png.Encode(newFile, newImg)
@@ -101,7 +106,5 @@ func ResizeImage(imageData io.Reader, dst, filename string, width, height uint) 
 	if err != nil {
 		return "", NewError(ErrResize, "resize & encode image", err.Error())
 	}
-	defer newFile.Close()
-
 	return save, nil
 }

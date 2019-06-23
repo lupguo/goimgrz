@@ -23,9 +23,9 @@ var sizeMap = map[string]ByteSize{
 	"M": M,
 }
 
-// check str whether in str list
-func inlist(str string, strList []string) bool {
-	for _, s := range strList {
+// inlist check str whether in list
+func inlist(str string, list []string) bool {
+	for _, s := range list {
 		if str == s {
 			return true
 		}
@@ -33,7 +33,7 @@ func inlist(str string, strList []string) bool {
 	return false
 }
 
-// getImagesFromDir gets slice of the image file and iterates through the selected directory and its subdirectories.
+// GetImagesFromDir gets slice of the image file and iterates through the selected directory and its subdirectories.
 func GetImagesFromDir(dirname string) ([]string, error) {
 	if _, err := os.Stat(dirname); os.IsNotExist(err) {
 		return nil, NewError(ErrGetLocalDirImages, "dir is not exist "+dirname, err.Error())
@@ -80,7 +80,7 @@ forloop:
 	}
 }
 
-// compare data sizes (bytes, kilobytes, megabytes), human readable sizes, parsing, compare
+// SatisfyHumanSize compare data sizes (bytes, kilobytes, megabytes), human readable sizes, parsing, compare
 func SatisfyHumanSize(size string, limit string) (bool, error) {
 	var compare func(a, b uint64) bool
 	switch {
