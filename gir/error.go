@@ -1,4 +1,4 @@
-package main
+package gir
 
 import "fmt"
 
@@ -6,15 +6,18 @@ const (
 	// task
 	ErrResImageType = 10
 
-	// input parse
+	// input extract
 	ErrParse             = 20
 	ErrGetLocalDirImages = 21
+	ErrOpenLocalImage    = 22
+	ErrOpenHttpImage     = 23
 
-	ErrOpenLocalImage = 22
-	ErrOpenHttpImage  = 23
+	// filter
+	ErrDetectName = 30
+	ErrDetectSize = 31
 
 	// resize handle
-	ErrResize = 30
+	ErrResize = 40
 
 	// save file
 	ErrSaveFile = 60

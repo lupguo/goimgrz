@@ -1,4 +1,4 @@
-package main
+package gir
 
 import (
 	"fmt"
@@ -13,19 +13,45 @@ import (
 	"path"
 )
 
-// resize local image file, and save it to dst dirname
-func ResizeLocalImage(filename string, dst string, width, height uint) (string, error) {
+// gir image data resource type maybe local image, http url, or stdin base64_encode
+type ResourceType int
+
+const (
+	ResTypeLocal ResourceType = iota // local image
+	ResTypeHttp                      // http url image
+)
+
+// GirImage used for indicate the image resource which will being resize
+type GirImage struct {
+	resType ResourceType
+	data    []byte
+}
+
+// GirImage.Resize used for various resource image type
+func (gi *GirImage) ResizeTo(dst string, width, height uint) (string, error) {
+	switch gi.resType {
+	case ResTypeLocal:
+		return ResizeLocImg(string(gi.data), dst, width, height)
+	case ResTypeHttp:
+		return ResizeHttpImg(string(gi.data), dst, width, height)
+	default:
+		return "", NewError(ErrResImageType, "resource type", "cannot recognize the resize image's resource type")
+	}
+}
+
+// resizeLocalImage resize local image file, and save it to dst dirname
+func ResizeLocImg(filename string, dst string, width, height uint) (string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return "", NewError(ErrOpenLocalImage, "open local image", err.Error())
 	}
 	defer file.Close()
 
-	return resizeImage(file, dst, filename, width, height)
+	return ResizeImage(file, dst, filename, width, height)
 }
 
 // resize http url image file, and save it to dst dirname
-func ResizeHttpImage(imgUrl string, dst string, width, height uint) (string, error) {
+func ResizeHttpImg(imgUrl string, dst string, width, height uint) (string, error) {
 	resp, err := http.Get(imgUrl)
 	if err != nil {
 		return "", NewError(ErrOpenHttpImage, "http get image", err.Error())
@@ -39,11 +65,11 @@ func ResizeHttpImage(imgUrl string, dst string, width, height uint) (string, err
 	}
 
 	// resize image
-	return resizeImage(resp.Body, dst, resp.Request.URL.Path, width, height)
+	return ResizeImage(resp.Body, dst, resp.Request.URL.Path, width, height)
 }
 
 // resize an img to dst dirname, return image path or error
-func resizeImage(imageData io.Reader, dst, filename string, width, height uint) (string, error) {
+func ResizeImage(imageData io.Reader, dst, filename string, width, height uint) (string, error) {
 	// make sure dst dir exist
 	if err := os.MkdirAll(dst, 0755); err != nil {
 		return "", NewError(ErrResize, "mkdir dst", err.Error())
@@ -65,7 +91,7 @@ func resizeImage(imageData io.Reader, dst, filename string, width, height uint) 
 	case "png":
 		err = png.Encode(newFile, newImg)
 	case "jpeg":
-		err = jpeg.Encode(newFile, newImg, &jpeg.Options{85})
+		err = jpeg.Encode(newFile, newImg, &jpeg.Options{Quality:85})
 	case "gif":
 		err = gif.Encode(newFile, newImg, nil)
 	default:

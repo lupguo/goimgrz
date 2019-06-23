@@ -1,8 +1,8 @@
-package main
+package gir
 
 import "testing"
 
-func TestGirTask_ResizeImages(t *testing.T) {
+func TestGirTask_DoResize(t *testing.T) {
 	// http image
 	urlImgs := []string{
 		"https://cdn-images-1.medium.com/max/2400/1*pV0ZUbW1dURx-_YOWu1mzQ.png",
@@ -14,18 +14,17 @@ func TestGirTask_ResizeImages(t *testing.T) {
 		"./testdata/IMG_2489.JPG",
 	}
 
-	girTask := NewGirTask()
-	outDir := "/tmp/girls"
+	gt := NewGirTask("/tmp", 400, 0)
 
 	// new http gir task
 	for _, u := range urlImgs {
-		girTask.Add(ResTypeHttp, []byte(u), outDir, 300, 0)
+		gt.Add(ResTypeHttp, []byte(u))
 	}
 	// new local gir task
 	for _, l := range localImgs {
-		girTask.Add(ResTypeLocal, []byte(l), outDir, 400, 0)
+		gt.Add(ResTypeLocal, []byte(l))
 	}
 
 	// gir do resize task
-	girTask.DoResize()
+	gt.DoResize()
 }
