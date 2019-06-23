@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"goimgrz/gir"
+	"github.com/tkstorm/goimgrz/gir"
 	"log"
 )
 

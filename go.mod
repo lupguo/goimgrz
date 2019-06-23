@@ -1,4 +1,4 @@
-module goimgrz
+module github.com/tkstorm/goimgrz
 
 go 1.12
 

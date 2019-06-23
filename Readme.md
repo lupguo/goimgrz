@@ -8,7 +8,7 @@ Please note: the toolkit may continue to make major changes until version 0.1
 
 ## Install
 ```
-go get -v github.com/tkstorm/image-resize-tool
+go get -v github.com/tkstorm/goimgrz
 ```
 
 ## Help
