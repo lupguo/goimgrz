@@ -1,4 +1,4 @@
-module girls
+module goimgrz
 
 go 1.12
 

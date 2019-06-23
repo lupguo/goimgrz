@@ -51,23 +51,22 @@ func (gt *GirTask) SetFilter(f *Filter) *GirTask {
 	return gt
 }
 
-// Add specified image to gir task, waiting for resize
+// Add using filter pickup specified image to gir task, waiting for resize
 func (gt *GirTask) Add(rt ResourceType, data []byte) *GirTask {
-	// filter detect input name
-	if err := gt.filter.DetectName(string(data)); err != nil && gt.verbose {
-		gt.chErr <- err
+	if err := gt.filter.DetectName(string(data)); err != nil {
+		if gt.verbose {
+			gt.chErr <- err
+		}
+	} else if err := gt.filter.DetectSize(rt, data); err != nil {
+		if gt.verbose {
+			gt.chErr <- err
+		}
+	} else {
+		gt.images = append(gt.images, &GirImage{
+			resType: rt,
+			data:    data,
+		})
 	}
-	// filter detect size
-	if err := gt.filter.DetectSize(rt, data); err != nil && gt.verbose {
-		gt.chErr <- err
-	}
-	// filter ok to gir task image
-	gi := &GirImage{
-		resType: rt,
-		data:    data,
-	}
-	gt.images = append(gt.images, gi)
-
 	return gt
 }
 

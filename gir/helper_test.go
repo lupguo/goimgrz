@@ -30,7 +30,6 @@ func TestParseHumanDataSize(t *testing.T) {
 			t.Errorf("human size: %s, want %d, but got %d", tt.size, tt.want, nsize)
 		}
 	}
-
 }
 
 func TestSatisfyHumanSize(t *testing.T) {

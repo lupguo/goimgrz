@@ -33,7 +33,7 @@ func (e GirError) Error() string {
 	return fmt.Sprintf("error(%d): %s, %s", e.No, e.Mark, e.Msg)
 }
 
-// new girls error
+// new goimgrz error
 func NewError(no int, mark, msg string) GirError {
 	return GirError{no, mark, msg}
 }

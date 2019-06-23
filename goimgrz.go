@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"girls/gir"
+	"goimgrz/gir"
 	"log"
 )
 
@@ -91,7 +91,6 @@ func main() {
 
 	// check gir task
 	if gt.IsEmptyTask() {
-		flag.PrintDefaults()
 		log.Fatalln("resize image task is empty, check the parameters")
 	}
 

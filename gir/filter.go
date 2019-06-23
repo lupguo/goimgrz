@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -24,11 +25,14 @@ func NewFilter(pattern, size string) *Filter {
 
 // DetectName check the input url or image file whether match the filter pattern
 func (f *Filter) DetectName(name string) error {
+	// empty pattern
+	if f.pattern == "*" {
+		return nil
+	}
 	// empty check
 	if len(strings.Trim(name, " ")) == 0 {
 		return NewError(ErrDetectName, "task filter detect name pattern error", "input data is empty")
 	}
-
 	// shell pattern check
 	if mch, err := path.Match(f.pattern, name); err != nil {
 		return NewError(ErrDetectName, "task filter detect name pattern error", err.Error())
@@ -45,7 +49,6 @@ func (f *Filter) DetectSize(rt ResourceType, data []byte) error {
 	if len(strings.Trim(f.limit, " ")) == 0 {
 		return nil
 	}
-
 	// filter check
 	var size int64
 	switch rt {
@@ -62,9 +65,10 @@ func (f *Filter) DetectSize(rt ResourceType, data []byte) error {
 		}
 		size = fi.Size()
 	}
-	if ok, err := SatisfyHumanSize(string(size), f.limit); err != nil {
+
+	if satisfy, err := SatisfyHumanSize(strconv.FormatInt(size, 10), f.limit); err != nil {
 		return NewError(ErrDetectSize, "task filter detect size error", err.Error())
-	} else if !ok {
+	} else if !satisfy {
 		return NewError(ErrDetectSize, "task filter detect size not match", fmt.Sprintf("size:%s, file size:%d", f.limit, size))
 	}
 	return nil
