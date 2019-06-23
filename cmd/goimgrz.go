@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/tkstorm/goimgrz/gir"
+	"github.com/tkstorm/goimgrz"
 	"log"
 )
 
@@ -63,10 +63,10 @@ func main() {
 	flag.Parse()
 
 	// create gir task
-	gt := gir.NewGirTask(cmd.dst, cmd.width, cmd.height)
+	gt := goimgrz.NewGirTask(cmd.dst, cmd.width, cmd.height)
 
 	// setting gir filter && relative parameters
-	gt.SetFilter(gir.NewFilter(cmd.name, cmd.size))
+	gt.SetFilter(goimgrz.NewFilter(cmd.name, cmd.size))
 	gt.SetVerbose(cmd.verbose)
 
 	// report in background synchronously
@@ -74,10 +74,10 @@ func main() {
 
 	// add gir task
 	if cmd.img != "" {
-		gt.Add(gir.ResTypeLocal, []byte(cmd.img))
+		gt.Add(goimgrz.ResTypeLocal, []byte(cmd.img))
 	}
 	if cmd.url != "" {
-		gt.Add(gir.ResTypeHttp, []byte(cmd.url))
+		gt.Add(goimgrz.ResTypeHttp, []byte(cmd.url))
 	}
 	if cmd.imgs != "" {
 		gt.AddFiles(cmd.imgs)

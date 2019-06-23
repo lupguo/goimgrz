@@ -9,7 +9,6 @@ Please note: the toolkit may continue to make major changes until version 0.1
 ## Install
 ```
 go get -v github.com/tkstorm/goimgrz
-go get -u github.com/tkstorm/goimgrz
 ```
 
 ## Help
@@ -39,8 +38,6 @@ Usage of goimgrz:
   -width uint
     	set resize image's width (default 300)
 ```
-
-
 
 The `-crawler_url`、`quality`、`water_img` is developing, it will finished 
 soon（now is unavailable）

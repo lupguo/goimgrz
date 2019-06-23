@@ -1,4 +1,4 @@
-package gir
+package goimgrz
 
 import (
 	"log"
