@@ -16,8 +16,6 @@ go get -u github.com/tkstorm/goimgrz
 ```
 $ goimgrz -h
 Usage of goimgrz:
-  -crawler_url string
-    	the crawler url used by goimgrz download the http images and resize only matched image files
   -dir string
     	scan the dir where image inside to be resize
   -dst string
@@ -30,8 +28,6 @@ Usage of goimgrz:
     	local image files which to be resize, separated by ','
   -name string
     	using shell pattern to filter image, like *.png (default "*")
-  -quality uint
-    	set resize image's quality percent (default 75)
   -size string
     	using file size to filter image, like +200k
   -url string
@@ -40,11 +36,11 @@ Usage of goimgrz:
     	image's http(s) urls to be resize, separated by ','
   -verbose
     	append water image
-  -water_img string
-    	append water image
   -width uint
     	set resize image's width (default 300)
 ```
+
+
 
 The `-crawler_url`、`quality`、`water_img` is developing, it will finished 
 soon（now is unavailable）
