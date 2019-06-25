@@ -23,7 +23,8 @@ var cmd struct {
 	width uint   // resize image's width
 
 	// advanced parameter
-	quality  uint   // resize image quality percent
+	quality  int   // resize image quality percent
+	interp   uint   //the provided interpolation functions support
 	height   uint   // resize image's height
 	waterImg string // append an water image
 	verbose  bool   // show detailed message
@@ -46,10 +47,11 @@ func init() {
 
 	// necessary parameter
 	flag.StringVar(&cmd.dst, "dst", "/tmp", "the output dir where image after resize store")
-	flag.UintVar(&cmd.width, "width", 300, "set resize image's width")
+	flag.UintVar(&cmd.width, "width", 0, "set resize image's width, default width and height is 0 represent origin image")
 
 	// advanced parameter
-	flag.UintVar(&cmd.quality, "quality", 75, "set resize image's quality percent")
+	flag.IntVar(&cmd.quality, "quality", 75, "set resize image's quality percent")
+	flag.UintVar(&cmd.interp, "interp", 0, "the provided interpolation functions support (from fast to slow execution time), 0:NearestNeighbor,1:Bilinear,2:Bicubic,3:MitchellNetravali,4:Lanczos2,5:Lanczos3")
 	flag.UintVar(&cmd.height, "height", 0, "set resize image's height")
 	flag.StringVar(&cmd.waterImg, "water_img", "", "append water image")
 	flag.BoolVar(&cmd.verbose, "verbose", false, "append water image")
@@ -63,7 +65,7 @@ func main() {
 	flag.Parse()
 
 	// create gir task
-	gt := goimgrz.NewGirTask(cmd.dst, cmd.width, cmd.height)
+	gt := goimgrz.NewGirTask(cmd.dst, cmd.width, cmd.height, cmd.interp)
 
 	// setting gir filter && relative parameters
 	gt.SetFilter(goimgrz.NewFilter(cmd.name, cmd.size))
@@ -74,13 +76,13 @@ func main() {
 
 	// add gir task
 	if cmd.img != "" {
-		gt.Add(goimgrz.ResTypeLocal, []byte(cmd.img))
-	}
-	if cmd.url != "" {
-		gt.Add(goimgrz.ResTypeHttp, []byte(cmd.url))
+		gt.AddImg(cmd.img)
 	}
 	if cmd.imgs != "" {
-		gt.AddFiles(cmd.imgs)
+		gt.AddImgs(cmd.imgs)
+	}
+	if cmd.url != "" {
+		gt.AddUrl(cmd.url)
 	}
 	if cmd.urls != "" {
 		gt.AddUrls(cmd.urls)
@@ -95,5 +97,5 @@ func main() {
 	}
 
 	//  do gir task concurrently
-	gt.DoResize()
+	gt.Run()
 }

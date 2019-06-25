@@ -16,26 +16,28 @@ type saveRs struct {
 // GirTask used for collect image resize, dispatching resize image task, got the save result or fail info from channel
 type GirTask struct {
 	filter  *Filter
-	images  []*GirImage
+	images  []Image
 	chErr   chan error
 	chSave  chan saveRs
 	fin     chan bool
 	dst     string
 	width   uint
 	height  uint
+	interp  uint
+	quality int
 	verbose bool
 }
 
 // NewGirTask create an GirTas pointer
-func NewGirTask(dst string, w, h uint) *GirTask {
+func NewGirTask(dst string, w, h, interp uint) *GirTask {
 	return &GirTask{
-		images: []*GirImage{},
 		chErr:  make(chan error),
 		chSave: make(chan saveRs),
 		fin:    make(chan bool),
 		dst:    dst,
 		width:  w,
 		height: h,
+		interp: interp,
 	}
 }
 
@@ -51,54 +53,66 @@ func (gt *GirTask) SetFilter(f *Filter) *GirTask {
 	return gt
 }
 
-// Add using filter pickup specified image to gir task, waiting for resize
-func (gt *GirTask) Add(rt ResourceType, data []byte) *GirTask {
+// Filter filter specified image
+func (gt *GirTask) Filter(rt ResourceType, data []byte) error {
+	// detect name
 	if err := gt.filter.DetectName(string(data)); err != nil {
-		if gt.verbose {
-			gt.chErr <- err
-		}
-	} else if err := gt.filter.DetectSize(rt, data); err != nil {
-		if gt.verbose {
-			gt.chErr <- err
-		}
-	} else {
-		gt.images = append(gt.images, &GirImage{
-			resType: rt,
-			data:    data,
-		})
+		return err
+	}
+	// detect size
+	if err := gt.filter.DetectSize(rt, data); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Add use filtering information to filter files, and add image to task for resizing
+func (gt *GirTask) Add(image Image) *GirTask {
+	// filter by name or size
+	gt.images = append(gt.images, image)
+	return gt
+}
+
+func (gt *GirTask) AddImg(img string) *GirTask {
+	// filter by name or size
+	gt.images = append(gt.images, &LocImage{img})
+	return gt
+}
+
+func (gt *GirTask) AddImgs(imgs string) *GirTask {
+	for _, img := range strings.Split(imgs, ",") {
+		gt.Add(&LocImage{img})
 	}
 	return gt
 }
 
-// AddUrls specified urls, add url image to gir task, waiting for resize
+func (gt *GirTask) AddUrl(url string) *GirTask {
+	gt.images = append(gt.images, &HttpImage{url})
+	return gt
+}
+
 func (gt *GirTask) AddUrls(urls string) *GirTask {
 	for _, url := range strings.Split(urls, ",") {
-		gt.Add(ResTypeHttp, []byte(url))
-	}
-	return gt
-}
-
-// AddFiles specified local files, add to gir task, waiting for resize
-func (gt *GirTask) AddFiles(imgs string) *GirTask {
-	for _, img := range strings.Split(imgs, ",") {
-		gt.Add(ResTypeLocal, []byte(img))
+		gt.Add(&HttpImage{url})
 	}
 	return gt
 }
 
 // AddDirname specified dirname, scan images and add it to gir task, waiting for resize
 func (gt *GirTask) AddScanDir(dir string) *GirTask {
-	if imgs, err := GetImagesFromDir(dir); err != nil {
+	// scan dir get images
+	imgs, err := GetImagesFromDir(dir)
+	if err != nil {
 		gt.chErr <- err
-	} else {
-		for _, img := range imgs {
-			gt.Add(ResTypeLocal, []byte(img))
-		}
+		return gt
+	}
+	for _, img := range imgs {
+		gt.Add(&LocImage{img})
 	}
 	return gt
 }
 
-// IsEmpty check girTask whether is empty
+// EmptyTask return girTask whether is empty
 func (gt *GirTask) EmptyTask() bool {
 	return len(gt.images) == 0
 }
@@ -130,14 +144,14 @@ func (gt *GirTask) Report() {
 }
 
 // ResizeImages concurrency resize image in it's GirImage slice
-func (gt *GirTask) DoResize() {
+func (gt *GirTask) Run() {
 	// concurrency task working
 	wg := sync.WaitGroup{}
 
-	// do resize function
-	doResize := func(gi *GirImage) {
+	// doResize resize an input image
+	doResize := func(img Image) {
 		defer wg.Done()
-		save, err := gi.ResizeTo(gt.dst, gt.width, gt.height)
+		save, err := img.ResizeTo(gt.dst, gt.width, gt.height, gt.interp, gt.quality)
 		if err != nil {
 			gt.chErr <- err
 			return
@@ -150,9 +164,9 @@ func (gt *GirTask) DoResize() {
 	}
 
 	// dispatch task
-	for _, gti := range gt.images {
+	for _, img := range gt.images {
 		wg.Add(1)
-		go doResize(gti)
+		go doResize(img)
 	}
 
 	// wait for all task finished, then close send chan to stop the report goroutine(like three handshake)

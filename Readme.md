@@ -1,6 +1,4 @@
 ## goimgrz
-~~goimgrz is not girl, it just short for **Go Image Resize List**, It is used for
-resize network or local images to specified size and destination~~
 
 This is a command line tool based on resize Http images or native images written by golang, supporting batch and concurrent processing.
 

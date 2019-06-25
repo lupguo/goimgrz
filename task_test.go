@@ -1,6 +1,9 @@
 package goimgrz
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestGirTask_DoResize(t *testing.T) {
 	// http image
@@ -14,17 +17,18 @@ func TestGirTask_DoResize(t *testing.T) {
 		"./testdata/IMG_2489.JPG",
 	}
 
-	gt := NewGirTask("/tmp", 400, 0)
+	// temp dir
+	gt := NewGirTask(os.TempDir()+"/goimgrz", 400, 0, 0)
 
 	// new http gir task
-	for _, u := range urlImgs {
-		gt.Add(ResTypeHttp, []byte(u))
+	for _, url := range urlImgs {
+		gt.AddUrl(url)
 	}
 	// new local gir task
-	for _, l := range localImgs {
-		gt.Add(ResTypeLocal, []byte(l))
+	for _, img := range localImgs {
+		gt.AddImg(img)
 	}
 
 	// gir do resize task
-	gt.DoResize()
+	gt.Run()
 }

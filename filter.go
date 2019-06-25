@@ -11,7 +11,7 @@ import (
 
 // Filter is an filter pick up the image matching the condition
 type Filter struct {
-	pattern string // shell pattern name
+	pattern string // shell pattern name, eg */*.png
 	limit   string // like +n, -n, eg +100k, filter larger than 100k image file
 }
 
