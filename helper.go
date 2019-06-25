@@ -1,29 +1,37 @@
 package goimgrz
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 )
 
-// ByteSize
-type ByteSize uint64
+// The byteSize is the smallest unit of storage, representing a byte
+type byteSize uint64
 
-// Human readable size, like 10k
+// Growth based on human-readable unit formats, 1k=1024b,1M=1024k..
 const (
-	b ByteSize = 1 << (iota * 10)
+	b byteSize = 1 << (iota * 10)
 	k
 	M
+	G
+	T
+	P
 )
 
-var sizeMap = map[string]ByteSize{
-	"b": b,
+// Human-readable unit formats, 1k=1024b
+var sizeMap = map[string]byteSize{
+	"c": b,
 	"k": k,
 	"M": M,
+	"G": G,
+	"T": T,
+	"P": P,
 }
 
-// inlist check str whether in list
+// check str whether in list
 func inlist(str string, list []string) bool {
 	for _, s := range list {
 		if str == s {
@@ -58,8 +66,8 @@ func GetImagesFromDir(dirname string) ([]string, error) {
 	return imgs, nil
 }
 
-// ParseHumanDataSize parse human data size(like 10k,10M) to bytes
-func ParseHumanDataSize(size string) (uint64, error) {
+// HumDS2Bytes parse human data size(like 10k,10M) to bytes unit length, like 1k = 1024bytes
+func HumDS2Bytes(size string) (len uint64, err error) {
 	unit := b
 	var digits string
 forloop:
@@ -80,8 +88,16 @@ forloop:
 	}
 }
 
-// SatisfyHumanSize compare data sizes (bytes, kilobytes, megabytes), human readable sizes, parsing, compare
-func SatisfyHumanSize(size string, limit string) (bool, error) {
+// HumDSLimit compare human data sizes and limit setting (like find -size).
+// Param size and limit both support human data size format(bytes, kilobytes, megabytes), like 100k, 1M
+//
+// HumDSLimit("2000", "+1k") represent whether 1000 bytes >= 1*1024 bytes
+// 	+/-: >= or < , 1k: 1k=1024bytes
+func HumDSLimit(size string, limit string) (bool, error) {
+	if len(size) ==0 || len(limit) == 0 {
+		return false, errors.New("size or size limit is empty")
+	}
+
 	var compare func(a, b uint64) bool
 	switch {
 	case limit[0] == '+':
@@ -100,14 +116,15 @@ func SatisfyHumanSize(size string, limit string) (bool, error) {
 		}
 	}
 
-	nsize, err := ParseHumanDataSize(size)
+	// compare size and limit length
+	SizeLen, err := HumDS2Bytes(size)
 	if err != nil {
 		return false, err
 	}
-	nlimit, err := ParseHumanDataSize(limit)
+	limitLen, err := HumDS2Bytes(limit)
 	if err != nil {
 		return false, err
 	}
 
-	return compare(nsize, nlimit), nil
+	return compare(SizeLen, limitLen), nil
 }

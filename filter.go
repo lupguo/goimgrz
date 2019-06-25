@@ -24,52 +24,69 @@ func NewFilter(pattern, size string) *Filter {
 }
 
 // DetectName check the input url or image file whether match the filter pattern
-func (f *Filter) DetectName(name string) error {
-	// empty pattern
+func (f *Filter) DetectName(image Image) (bool, error) {
+	// no limit pattern filter
 	if f.pattern == "*" {
-		return nil
+		return true, nil
+	}
+	// image name
+	var name string
+	switch img := image.(type) {
+	case *LocImage:
+		name = img.filename
+	case *HttpImage:
+		name = img.url
+	default:
+		return false, NewError(ErrDetectName, "image type", "unsupported image type")
 	}
 	// empty check
 	if len(strings.Trim(name, " ")) == 0 {
-		return NewError(ErrDetectName, "task filter detect name pattern error", "input data is empty")
+		return false, NewError(ErrDetectName, "empty name", "image name is empty")
 	}
 	// shell pattern check
 	if mch, err := path.Match(f.pattern, name); err != nil {
-		return NewError(ErrDetectName, "task filter detect name pattern error", err.Error())
+		return false, NewError(ErrDetectName, "pattern error", err.Error())
 	} else if mch == false {
-		return NewError(ErrDetectName, "task filter detect name pattern not match", fmt.Sprintf("pattern:%s, name:%s", f.pattern, name))
+		return false, NewError(ErrDetectName, "not match", fmt.Sprintf("pattern:%s, name:%s", f.pattern, name))
 	}
 
-	return nil
+	return true, nil
 }
 
 // DetectSize check the input url
-func (f *Filter) DetectSize(rt ResourceType, data []byte) error {
-	// filter not check when limit is empty
+func (f *Filter) DetectSize(image Image) (bool, error) {
+	// no limit size filter
 	if len(strings.Trim(f.limit, " ")) == 0 {
-		return nil
+		return true, nil
 	}
 	// filter check
 	var size int64
-	switch rt {
-	case ResTypeHttp:
-		resp, err := http.Head(string(data))
+	switch img := image.(type) {
+	case *LocImage:
+		fi, err := os.Stat(img.filename)
 		if err != nil {
-			return err
-		}
-		size = resp.ContentLength
-	case ResTypeLocal:
-		fi, err := os.Stat(string(data))
-		if err != nil {
-			return NewError(ErrDetectSize, "task filter detect size error", err.Error())
+			return false, NewError(ErrDetectSize, "detect local image size error", err.Error())
 		}
 		size = fi.Size()
+	case *HttpImage:
+		resp, err := http.Head(img.url)
+		if err != nil {
+			return false, NewError(ErrDetectSize, "detect http image size error", err.Error())
+		}
+		size = resp.ContentLength
+	default:
+		return false, NewError(ErrDetectName, "image type", "unsupported image type")
 	}
 
-	if satisfy, err := SatisfyHumanSize(strconv.FormatInt(size, 10), f.limit); err != nil {
-		return NewError(ErrDetectSize, "task filter detect size error", err.Error())
-	} else if !satisfy {
-		return NewError(ErrDetectSize, "task filter detect size not match", fmt.Sprintf("size:%s, file size:%d", f.limit, size))
+	// human size detect
+	ok, err := HumDSLimit(strconv.FormatInt(size, 10), f.limit)
+	if err != nil {
+		return false, NewError(ErrDetectSize, "detect size error", err.Error())
 	}
-	return nil
+	// not
+	if ok == false {
+		return false, NewError(ErrDetectSize, "not satisfy", fmt.Sprintf("limit size:%s, file size:%d", f.limit, size))
+	}
+
+	return true, nil
 }

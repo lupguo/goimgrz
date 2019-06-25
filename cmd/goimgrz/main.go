@@ -46,7 +46,7 @@ func init() {
 	flag.StringVar(&cmd.scanDir, "dir", "", "scan the dir where image inside to be resize")
 
 	// necessary parameter
-	flag.StringVar(&cmd.dst, "dst", "/tmp", "the output dir where image after resize store")
+	flag.StringVar(&cmd.dst, "dst", "/tmp/goimgrz", "the output dir where image after resize store")
 	flag.UintVar(&cmd.width, "width", 0, "set resize image's width, default width and height is 0 represent origin image")
 
 	// advanced parameter

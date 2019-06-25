@@ -10,7 +10,7 @@ func TestGetLocalImages(t *testing.T) {
 	t.Log(imgs)
 }
 
-func TestParseHumanDataSize(t *testing.T) {
+func TestHumDS2Bytes(t *testing.T) {
 	test := []struct {
 		size string
 		want uint64
@@ -22,12 +22,12 @@ func TestParseHumanDataSize(t *testing.T) {
 	}
 
 	for _, tt := range test {
-		nsize, err := ParseHumanDataSize(tt.size)
+		sizeLen, err := HumDS2Bytes(tt.size)
 		if err != nil {
 			t.Errorf("ParseHumanDataSize(%s), %s", tt.size, err)
 		}
-		if nsize != tt.want {
-			t.Errorf("human size: %s, want %d, but got %d", tt.size, tt.want, nsize)
+		if sizeLen != tt.want {
+			t.Errorf("human size: %s, want %d, but got %d", tt.size, tt.want, sizeLen)
 		}
 	}
 }
@@ -53,16 +53,19 @@ func TestSatisfyHumanSize(t *testing.T) {
 		{"100", "1M", false},
 		{"100", "+1M", false},
 		{"100", "-1M", true},
-		{"100", "", true},
+		{"100", "", false},
 	}
 
 	for _, tt := range test {
-		satisfy, err := SatisfyHumanSize(tt.size, tt.limit)
+		ok, err := HumDSLimit(tt.size, tt.limit)
 		if err != nil {
-			t.Errorf("SatisfyHumanSize(%s, %s), %s", tt.size, tt.limit, err)
+			t.Logf("SatisfyHumanSize(%s, %s), want %t, err %s", tt.size, tt.limit, ok, err)
+			if tt.want == true {
+				t.Fail()
+			}
 		}
-		if satisfy != tt.want {
-			t.Errorf("file size %s, compare %s,  want %t, but got %t", tt.size, tt.limit, tt.want, satisfy)
+		if ok != tt.want {
+			t.Errorf("file size %s, compare %s, want %t, but got %t", tt.size, tt.limit, tt.want, ok)
 		}
 	}
 

@@ -54,21 +54,35 @@ func (gt *GirTask) SetFilter(f *Filter) *GirTask {
 }
 
 // Filter filter specified image
-func (gt *GirTask) Filter(rt ResourceType, data []byte) error {
+func (gt *GirTask) Filter(image Image) error {
 	// detect name
-	if err := gt.filter.DetectName(string(data)); err != nil {
+	if ok, err := gt.filter.DetectName(image); !ok {
 		return err
 	}
 	// detect size
-	if err := gt.filter.DetectSize(rt, data); err != nil {
+	if ok, err := gt.filter.DetectSize(image); !ok {
 		return err
 	}
+
 	return nil
 }
 
 // Add use filtering information to filter files, and add image to task for resizing
 func (gt *GirTask) Add(image Image) *GirTask {
 	// filter by name or size
+	if ok, err := gt.filter.DetectName(image); !ok {
+		if gt.verbose {
+			gt.chErr <- err
+		}
+		return gt
+	}
+	if ok, err := gt.filter.DetectSize(image); !ok {
+		if gt.verbose {
+			gt.chErr <- err
+		}
+		return gt
+	}
+
 	gt.images = append(gt.images, image)
 	return gt
 }
