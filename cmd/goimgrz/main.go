@@ -65,7 +65,7 @@ func main() {
 	flag.Parse()
 
 	// create gir task
-	gt := goimgrz.NewGirTask(cmd.dst, cmd.width, cmd.height, cmd.interp)
+	gt := goimgrz.NewTask(cmd.dst, cmd.width, cmd.height, cmd.interp)
 
 	// setting gir filter && relative parameters
 	gt.SetFilter(goimgrz.NewFilter(cmd.name, cmd.size))

@@ -13,13 +13,13 @@ type saveRs struct {
 	h    uint
 }
 
-// GirTask used for collect image resize, dispatching resize image task, got the save result or fail info from channel
-type GirTask struct {
+// Task used for collect image resize, dispatching resize image task, got the save result or fail info from channel
+type Task struct {
 	filter  *Filter
 	images  []Image
 	chErr   chan error
 	chSave  chan saveRs
-	fin     chan bool
+	fin     chan struct{}
 	dst     string
 	width   uint
 	height  uint
@@ -28,12 +28,12 @@ type GirTask struct {
 	verbose bool
 }
 
-// NewGirTask create an GirTas pointer
-func NewGirTask(dst string, w, h, interp uint) *GirTask {
-	return &GirTask{
+// NewTask create an GirTas pointer
+func NewTask(dst string, w, h, interp uint) *Task {
+	return &Task{
 		chErr:  make(chan error),
 		chSave: make(chan saveRs),
-		fin:    make(chan bool),
+		fin:    make(chan struct{}),
 		dst:    dst,
 		width:  w,
 		height: h,
@@ -42,19 +42,19 @@ func NewGirTask(dst string, w, h, interp uint) *GirTask {
 }
 
 // SetVerbose setting the task show detail message
-func (gt *GirTask) SetVerbose(v bool) *GirTask {
+func (gt *Task) SetVerbose(v bool) *Task {
 	gt.verbose = v
 	return gt
 }
 
 // SetFilter setting the task filter, using for filter no match info
-func (gt *GirTask) SetFilter(f *Filter) *GirTask {
+func (gt *Task) SetFilter(f *Filter) *Task {
 	gt.filter = f
 	return gt
 }
 
 // Filter filter specified image
-func (gt *GirTask) Filter(image Image) error {
+func (gt *Task) Filter(image Image) error {
 	// detect name
 	if ok, err := gt.filter.DetectName(image); !ok {
 		return err
@@ -68,7 +68,7 @@ func (gt *GirTask) Filter(image Image) error {
 }
 
 // Add use filtering information to filter files, and add image to task for resizing
-func (gt *GirTask) Add(image Image) *GirTask {
+func (gt *Task) Add(image Image) *Task {
 	// filter by name or size
 	if ok, err := gt.filter.DetectName(image); !ok {
 		if gt.verbose {
@@ -87,25 +87,25 @@ func (gt *GirTask) Add(image Image) *GirTask {
 	return gt
 }
 
-func (gt *GirTask) AddImg(img string) *GirTask {
+func (gt *Task) AddImg(img string) *Task {
 	// filter by name or size
 	gt.images = append(gt.images, &LocImage{img})
 	return gt
 }
 
-func (gt *GirTask) AddImgs(imgs string) *GirTask {
+func (gt *Task) AddImgs(imgs string) *Task {
 	for _, img := range strings.Split(imgs, ",") {
 		gt.Add(&LocImage{img})
 	}
 	return gt
 }
 
-func (gt *GirTask) AddUrl(url string) *GirTask {
+func (gt *Task) AddUrl(url string) *Task {
 	gt.images = append(gt.images, &HttpImage{url})
 	return gt
 }
 
-func (gt *GirTask) AddUrls(urls string) *GirTask {
+func (gt *Task) AddUrls(urls string) *Task {
 	for _, url := range strings.Split(urls, ",") {
 		gt.Add(&HttpImage{url})
 	}
@@ -113,7 +113,7 @@ func (gt *GirTask) AddUrls(urls string) *GirTask {
 }
 
 // AddDirname specified dirname, scan images and add it to gir task, waiting for resize
-func (gt *GirTask) AddScanDir(dir string) *GirTask {
+func (gt *Task) AddScanDir(dir string) *Task {
 	// scan dir get images
 	imgs, err := GetImagesFromDir(dir)
 	if err != nil {
@@ -126,13 +126,13 @@ func (gt *GirTask) AddScanDir(dir string) *GirTask {
 	return gt
 }
 
-// EmptyTask return girTask whether is empty
-func (gt *GirTask) EmptyTask() bool {
+// EmptyTask return Task whether is empty
+func (gt *Task) EmptyTask() bool {
 	return len(gt.images) == 0
 }
 
 // Report synchronously report success or fail result in background, when gir task is finish
-func (gt *GirTask) Report() {
+func (gt *Task) Report() {
 	wg := sync.WaitGroup{}
 
 	// report success
@@ -154,11 +154,11 @@ func (gt *GirTask) Report() {
 	}()
 
 	wg.Wait()
-	gt.fin <- true
+	gt.fin <- struct{}{}
 }
 
 // ResizeImages concurrency resize image in it's GirImage slice
-func (gt *GirTask) Run() {
+func (gt *Task) Run() {
 	// concurrency task working
 	wg := sync.WaitGroup{}
 

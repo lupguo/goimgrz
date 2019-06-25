@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGirTask_DoResize(t *testing.T) {
+func TestTask_DoResize(t *testing.T) {
 	// http image
 	urlImgs := []string{
 		"https://cdn-images-1.medium.com/max/2400/1*pV0ZUbW1dURx-_YOWu1mzQ.png",
@@ -18,7 +18,7 @@ func TestGirTask_DoResize(t *testing.T) {
 	}
 
 	// temp dir
-	gt := NewGirTask(os.TempDir()+"/goimgrz", 400, 0, 0)
+	gt := NewTask(os.TempDir()+"/goimgrz", 400, 0, 0)
 
 	// new http gir task
 	for _, url := range urlImgs {

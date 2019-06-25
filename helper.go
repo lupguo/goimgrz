@@ -31,10 +31,10 @@ var sizeMap = map[string]byteSize{
 	"P": P,
 }
 
-// check str whether in list
-func inlist(str string, list []string) bool {
-	for _, s := range list {
-		if str == s {
+// inlist checks whether s is in l
+func inlist(s string, l []string) bool {
+	for _, ss := range l {
+		if ss == s {
 			return true
 		}
 	}
