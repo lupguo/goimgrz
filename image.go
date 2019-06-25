@@ -13,14 +13,6 @@ import (
 	"path"
 )
 
-// gir image data resource type maybe local image, http url, or stdin base64_encode
-type ResourceType int
-
-const (
-	ResTypeLocal ResourceType = iota // local image
-	ResTypeHttp                      // http url image
-)
-
 // Image support using specified parameters resize image to dst
 type Image interface {
 	ResizeTo(dst string, w, h, interp uint, qty int) (string, error)
