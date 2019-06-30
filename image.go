@@ -13,34 +13,80 @@ import (
 	"path"
 )
 
+type Category int
+
+const (
+	Local Category = iota
+	Http
+)
+
+// Setting is image resize property setting like width,height,interp,quality,format
+type Setting struct {
+	Dst           string
+	Width, Height uint
+	Interp        uint
+	Qty           int
+	Format        string
+}
+
 // Image support using specified parameters resize image to dst
 type Image interface {
-	ResizeTo(dst string, w, h, interp uint, qty int) (string, error)
+	// SetResize set image resizing setting property, used for image resize
+	SetResize(setting *Setting)
+
+	// DoResize fit the specified resizing configuration resize image to destination
+	// Fit the specified scaling configuration (such as size, interpolation function, path, quality),
+	// perform image scaling, return the path of the scaled image, or any errors in the scaling process
+	DoResize() (string, error)
+}
+
+// New create an image for a specific category
+func NewImage(cate Category, ident string) Image {
+	switch cate {
+	case Local:
+		return &LocImage{ident, nil}
+	case Http:
+		return &HttpImage{ident, nil}
+	}
+	return nil
 }
 
 // LocImage is an local image file whose image from local filesystem
 type LocImage struct {
-	filename string
+	Filename string
+	Setting  *Setting
 }
 
 // HttpImage is an image from http(s) url
 type HttpImage struct {
-	url string
+	Url     string
+	Setting *Setting
 }
 
-func (img *LocImage) ResizeTo(dst string, w, h, interp uint, qty int) (save string, err error) {
-	f, err := os.Open(img.filename)
+// SetResize add image resizing property
+func (img *LocImage) SetResize(setting *Setting) {
+	img.Setting = setting
+}
+
+func (img *HttpImage) SetResize(setting *Setting) {
+	img.Setting = setting
+}
+
+func (img *LocImage) DoResize() (save string, err error) {
+	f, err := os.Open(img.Filename)
 	if err != nil {
 		return "", NewError(ErrOpenLocalImage, "open local image", err.Error())
 	}
 	defer f.Close()
 
 	// resize local image
-	return ResizeImage(f, dst, path.Base(img.filename), w, h, interp, qty)
+	s := img.Setting
+	name := path.Base(img.Filename)
+	return resizeImage(f, s.Dst, name, s.Format, s.Width, s.Height, s.Interp, s.Qty)
 }
 
-func (img *HttpImage) ResizeTo(dst string, w, h, interp uint, qty int) (save string, err error) {
-	resp, err := http.Get(img.url)
+func (img *HttpImage) DoResize() (save string, err error) {
+	resp, err := http.Get(img.Url)
 	if err != nil {
 		return "", NewError(ErrOpenHttpImage, "http get image", err.Error())
 	}
@@ -49,21 +95,23 @@ func (img *HttpImage) ResizeTo(dst string, w, h, interp uint, qty int) (save str
 	// status check
 	if resp.StatusCode != 200 {
 		return "", NewError(ErrOpenHttpImage, "http error", fmt.Sprintf("Request Url(%s), StatusCode(%d), Status(%s)",
-			img.url, resp.StatusCode, resp.Status))
+			img.Url, resp.StatusCode, resp.Status))
 	}
 
 	// resize url image
-	filename := path.Base(resp.Request.URL.Path)
-	return ResizeImage(resp.Body, dst, filename, w, h, interp, qty)
+	s := img.Setting
+	name := path.Base(resp.Request.URL.Path)
+	return resizeImage(resp.Body, s.Dst, name, s.Format, s.Width, s.Height, s.Interp, s.Qty)
 }
 
-// ResizeImage resize the image with the specified parameters, return the successful file or error
+// resizeImage resize the image with the specified parameters, return the successful file or error
 // support resize an image to dst with specified width and height, interpolation functions and quality setting
 //
 // about interpolation functions see more for details:
 // https://github.com/nfnt/resize
-func ResizeImage(imageData io.Reader, dst, filename string, width, height, interp uint, quality int) (save string, err error) {
-	save = path.Clean(dst + "/" + filename)
+func resizeImage(imageData io.Reader, dst, basename, format string, width, height, interp uint, quality int) (save string, err error) {
+	// get new format name
+	save = path.Clean(dst + "/" + GetFmtBasename(basename, format))
 
 	// make sure dst dir exist
 	if err := os.MkdirAll(path.Dir(save), 0755); err != nil {
@@ -71,7 +119,7 @@ func ResizeImage(imageData io.Reader, dst, filename string, width, height, inter
 	}
 
 	// decode image
-	img, format, err := image.Decode(imageData)
+	img, origFmt, err := image.Decode(imageData)
 	if err != nil {
 		return save, NewError(ErrResize, "image decode", err.Error())
 	}
@@ -86,6 +134,9 @@ func ResizeImage(imageData io.Reader, dst, filename string, width, height, inter
 	}
 	defer newFile.Close()
 
+	if format == "" {
+		format = origFmt
+	}
 	switch format {
 	case "png":
 		err = png.Encode(newFile, newImg)

@@ -18,7 +18,10 @@ func TestTask_DoResize(t *testing.T) {
 	}
 
 	// temp dir
-	gt := NewTask(os.TempDir()+"/goimgrz", 400, 0, 0)
+	setting := &Setting{
+		Dst: os.TempDir() + "/goimgrz/resize",
+	}
+	gt := NewTask(setting)
 
 	// new http gir task
 	for _, url := range urlImgs {

@@ -16,7 +16,7 @@ func TestFilter_DetectName(t *testing.T) {
 
 	for _, tt := range test {
 		flt := &Filter{pattern: tt.pattern}
-		img := &LocImage{tt.name}
+		img := &LocImage{tt.name, nil}
 		if ok, err := flt.DetectName(img); ok != tt.want {
 			t.Errorf("name=%s, pattern=%s, got=%t, want=%t, err:%s", tt.name, tt.pattern, false, tt.want, err)
 		}
@@ -47,7 +47,7 @@ func TestFilter_DetectSize(t *testing.T) {
 
 	for _, tt := range test {
 		flt := &Filter{limit: tt.limit}
-		img := &LocImage{tt.filename}
+		img := &LocImage{tt.filename, nil}
 
 		if ok, err := flt.DetectSize(img); ok != tt.want {
 			t.Errorf("filename=%s, limit=%s, got=%t, want=%t, err:%s", tt.filename, tt.limit, false, tt.want, err)

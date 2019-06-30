@@ -124,6 +124,8 @@ Usage of goimgrz:
       scan the dir where image inside to be resize
   -dst string
       the output dir where image after resize store (default "/tmp/goimgrz")
+  -format string
+      image format resize to(support jpg|png|gif)
   -height uint
       set resize image's height
   -img string
@@ -147,7 +149,7 @@ Usage of goimgrz:
   -water_img string
       append water image
   -width uint
-      set resize image's width, default width and height is 0 represent origin image
+      set resize image's width, default width and height is 0 represent origin image (default 800)
 ```
 
 The `-crawler_url`、`water_img` is developing (unavailable now）, it will coming soon

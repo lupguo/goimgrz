@@ -23,7 +23,8 @@ var cmd struct {
 	width uint   // resize image's width
 
 	// advanced parameter
-	quality  int   // resize image quality percent
+	format   string // resize to image format
+	quality  int    // resize image quality percent
 	interp   uint   //the provided interpolation functions support
 	height   uint   // resize image's height
 	waterImg string // append an water image
@@ -47,13 +48,14 @@ func init() {
 
 	// necessary parameter
 	flag.StringVar(&cmd.dst, "dst", "/tmp/goimgrz", "the output dir where image after resize store")
-	flag.UintVar(&cmd.width, "width", 0, "set resize image's width, default width and height is 0 represent origin image")
+	flag.UintVar(&cmd.width, "width", 800, "set resize image's width, default width and height is 0 represent origin image")
 
 	// advanced parameter
 	flag.IntVar(&cmd.quality, "quality", 75, "set resize image's quality percent")
 	flag.UintVar(&cmd.interp, "interp", 0, "the provided interpolation functions support (from fast to slow execution time), 0:NearestNeighbor,1:Bilinear,2:Bicubic,3:MitchellNetravali,4:Lanczos2,5:Lanczos3")
 	flag.UintVar(&cmd.height, "height", 0, "set resize image's height")
 	flag.StringVar(&cmd.waterImg, "water_img", "", "append water image")
+	flag.StringVar(&cmd.format, "format", "", "image format resize to(support jpg|png|gif)")
 	flag.BoolVar(&cmd.verbose, "verbose", false, "append water image")
 
 	// filter
@@ -65,7 +67,15 @@ func main() {
 	flag.Parse()
 
 	// create gir task
-	gt := goimgrz.NewTask(cmd.dst, cmd.width, cmd.height, cmd.interp)
+	setting := &goimgrz.Setting{
+		Dst:    cmd.dst,
+		Qty:    cmd.quality,
+		Width:  cmd.width,
+		Height: cmd.height,
+		Interp: cmd.interp,
+		Format: cmd.format,
+	}
+	gt := goimgrz.NewTask(setting)
 
 	// setting gir filter && relative parameters
 	gt.SetFilter(goimgrz.NewFilter(cmd.name, cmd.size))

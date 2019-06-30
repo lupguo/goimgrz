@@ -8,9 +8,12 @@ import (
 
 // saveRs save resize result
 type saveRs struct {
-	save string
-	w    uint
-	h    uint
+	save   string
+	w      uint
+	h      uint
+	interp uint
+	qty    int
+	format string
 }
 
 // Task used for collect image resize, dispatching resize image task, got the save result or fail info from channel
@@ -20,24 +23,18 @@ type Task struct {
 	chErr   chan error
 	chSave  chan saveRs
 	fin     chan struct{}
-	dst     string
-	width   uint
-	height  uint
-	interp  uint
-	quality int
+	setting *Setting
 	verbose bool
 }
 
 // NewTask create an GirTas pointer
-func NewTask(dst string, w, h, interp uint) *Task {
+func NewTask(setting *Setting) *Task {
 	return &Task{
-		chErr:  make(chan error),
-		chSave: make(chan saveRs),
-		fin:    make(chan struct{}),
-		dst:    dst,
-		width:  w,
-		height: h,
-		interp: interp,
+		filter:  new(Filter),
+		chErr:   make(chan error),
+		chSave:  make(chan saveRs),
+		fin:     make(chan struct{}),
+		setting: setting,
 	}
 }
 
@@ -83,31 +80,33 @@ func (gt *Task) Add(image Image) *Task {
 		return gt
 	}
 
+	// task image resize setting
+	image.SetResize(gt.setting)
+
 	gt.images = append(gt.images, image)
 	return gt
 }
 
 func (gt *Task) AddImg(img string) *Task {
-	// filter by name or size
-	gt.images = append(gt.images, &LocImage{img})
+	gt.Add(NewImage(Local, img))
 	return gt
 }
 
 func (gt *Task) AddImgs(imgs string) *Task {
 	for _, img := range strings.Split(imgs, ",") {
-		gt.Add(&LocImage{img})
+		gt.Add(NewImage(Local, img))
 	}
 	return gt
 }
 
 func (gt *Task) AddUrl(url string) *Task {
-	gt.images = append(gt.images, &HttpImage{url})
+	gt.Add(NewImage(Http, url))
 	return gt
 }
 
 func (gt *Task) AddUrls(urls string) *Task {
 	for _, url := range strings.Split(urls, ",") {
-		gt.Add(&HttpImage{url})
+		gt.Add(NewImage(Http, url))
 	}
 	return gt
 }
@@ -121,7 +120,7 @@ func (gt *Task) AddScanDir(dir string) *Task {
 		return gt
 	}
 	for _, img := range imgs {
-		gt.Add(&LocImage{img})
+		gt.Add(NewImage(Local, img))
 	}
 	return gt
 }
@@ -140,7 +139,8 @@ func (gt *Task) Report() {
 	go func() {
 		defer wg.Done()
 		for rs := range gt.chSave {
-			log.Printf("resize ok: %s (inputW=%d,inputH=%d)\n", rs.save, rs.w, rs.h)
+			log.Printf("resize ok: %s (inputW=%d,inputH=%d,qty=%d,interp=%d,format='%s')\n",
+				rs.save, rs.w, rs.h, rs.qty, rs.interp, rs.format)
 		}
 	}()
 
@@ -165,15 +165,18 @@ func (gt *Task) Run() {
 	// doResize resize an input image
 	doResize := func(img Image) {
 		defer wg.Done()
-		save, err := img.ResizeTo(gt.dst, gt.width, gt.height, gt.interp, gt.quality)
+		save, err := img.DoResize()
 		if err != nil {
 			gt.chErr <- err
 			return
 		}
 		gt.chSave <- saveRs{
 			save,
-			gt.width,
-			gt.height,
+			gt.setting.Width,
+			gt.setting.Height,
+			gt.setting.Interp,
+			gt.setting.Qty,
+			gt.setting.Format,
 		}
 	}
 
