@@ -44,9 +44,9 @@ type Image interface {
 func NewImage(cate Category, ident string) Image {
 	switch cate {
 	case Local:
-		return &LocImage{ident, nil}
+		return &LocImage{Filename: ident}
 	case Http:
-		return &HttpImage{ident, nil}
+		return &WebImage{Url: ident}
 	}
 	return nil
 }
@@ -57,18 +57,15 @@ type LocImage struct {
 	Setting  *Setting
 }
 
-// HttpImage is an image from http(s) url
-type HttpImage struct {
+// WebImage is an image from http(s) url
+type WebImage struct {
 	Url     string
 	Setting *Setting
+	client  *http.Client
 }
 
 // SetResize add image resizing property
 func (img *LocImage) SetResize(setting *Setting) {
-	img.Setting = setting
-}
-
-func (img *HttpImage) SetResize(setting *Setting) {
 	img.Setting = setting
 }
 
@@ -85,8 +82,18 @@ func (img *LocImage) DoResize() (save string, err error) {
 	return resizeImage(f, s.Dst, name, s.Format, s.Width, s.Height, s.Interp, s.Qty)
 }
 
-func (img *HttpImage) DoResize() (save string, err error) {
-	resp, err := http.Get(img.Url)
+func (img *WebImage) SetResize(setting *Setting) {
+	img.Setting = setting
+}
+
+//SetClient add http client for web image
+func (img *WebImage) SetClient(client *http.Client) *WebImage {
+	img.client = client
+	return img
+}
+
+func (img *WebImage) DoResize() (save string, err error) {
+	resp, err := img.client.Get(img.Url)
 	if err != nil {
 		return "", NewError(ErrOpenHttpImage, "http get image", err.Error())
 	}

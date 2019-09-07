@@ -1,9 +1,12 @@
 package imgrz
 
 import (
+	"crypto/tls"
 	"log"
+	"net/http"
 	"strings"
 	"sync"
+	"time"
 )
 
 // saveRs save resize result
@@ -18,24 +21,27 @@ type saveRs struct {
 
 // Task used for collect image resize, dispatching resize image task, got the save result or fail info from channel
 type Task struct {
-	filter  *Filter
-	images  []Image
-	chErr   chan error
-	chSave  chan saveRs
-	fin     chan struct{}
-	setting *Setting
-	verbose bool
+	filter   *Filter
+	images   []*Image
+	chErr    chan error
+	chSave   chan saveRs
+	fin      chan struct{}
+	setting  *Setting
+	initOnce sync.Once
+	client   *http.Client
+	verbose  bool
 }
 
 // NewTask create an GirTas pointer
 func NewTask(setting *Setting) *Task {
-	return &Task{
+	task := &Task{
 		filter:  new(Filter),
 		chErr:   make(chan error),
 		chSave:  make(chan saveRs),
 		fin:     make(chan struct{}),
 		setting: setting,
 	}
+	return task
 }
 
 // SetVerbose setting the task show detail message
@@ -82,16 +88,17 @@ func (gt *Task) Add(image Image) *Task {
 
 	// task image resize setting
 	image.SetResize(gt.setting)
-
-	gt.images = append(gt.images, image)
+	gt.images = append(gt.images, &image)
 	return gt
 }
 
+//AddImg add local image file to task, waiting for resize
 func (gt *Task) AddImg(img string) *Task {
 	gt.Add(NewImage(Local, img))
 	return gt
 }
 
+//AddImgs add multiple image file to task, waiting for resize
 func (gt *Task) AddImgs(imgs string) *Task {
 	for _, img := range strings.Split(imgs, ",") {
 		gt.Add(NewImage(Local, img))
@@ -99,14 +106,31 @@ func (gt *Task) AddImgs(imgs string) *Task {
 	return gt
 }
 
+func (gt *Task) initHttpClient() {
+	gt.initOnce.Do(func() {
+		gt.client = &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+				},
+			},
+			Timeout: 75 * time.Second,
+		}
+	})
+}
+
+//AddUrl add web image url to task, waiting for resize
 func (gt *Task) AddUrl(url string) *Task {
-	gt.Add(NewImage(Http, url))
+	gt.initHttpClient()
+	gt.Add(NewImage(Http, url).(*WebImage).SetClient(gt.client))
 	return gt
 }
 
+//AddUrls add multiple image url to task, waiting for resize
 func (gt *Task) AddUrls(urls string) *Task {
+	gt.initHttpClient()
 	for _, url := range strings.Split(urls, ",") {
-		gt.Add(NewImage(Http, url))
+		gt.Add(NewImage(Http, url).(*WebImage).SetClient(gt.client))
 	}
 	return gt
 }
@@ -183,7 +207,7 @@ func (gt *Task) Run() {
 	// dispatch task
 	for _, img := range gt.images {
 		wg.Add(1)
-		go doResize(img)
+		go doResize(*img)
 	}
 
 	// wait for all task finished, then close send chan to stop the report goroutine(like three handshake)

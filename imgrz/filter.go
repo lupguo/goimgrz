@@ -34,7 +34,7 @@ func (f *Filter) DetectName(image Image) (bool, error) {
 	switch img := image.(type) {
 	case *LocImage:
 		name = img.Filename
-	case *HttpImage:
+	case *WebImage:
 		name = img.Url
 	default:
 		return false, NewError(ErrDetectName, "image type", "unsupported image type")
@@ -68,7 +68,7 @@ func (f *Filter) DetectSize(image Image) (bool, error) {
 			return false, NewError(ErrDetectSize, "detect local image size error", err.Error())
 		}
 		size = fi.Size()
-	case *HttpImage:
+	case *WebImage:
 		resp, err := http.Head(img.Url)
 		if err != nil {
 			return false, NewError(ErrDetectSize, "detect http image size error", err.Error())
