@@ -2,68 +2,94 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/tkstorm/goimgrz/imgrz"
 	"log"
+	"os"
 )
+
+const version = "0.0.1"
 
 // cmd variable store all the parameter where input from command line
 var cmd struct {
-	// http image
-	url        string // the image's http(s) url to be resize
-	urls       string // the image's http(s) urls to be resize
-	crawlerUrl string // the crawler url used by girls, download http images and resize them
-
-	// local image
+	// image source (url images or local images)
+	url     string // the image's http(s) url to be resize
+	urls    string // the image's http(s) urls to be resize
 	img     string // the local image file which to be resize
 	imgs    string // the local image files  which to be resize
 	scanDir string // scan the dir where image inside to be resize
-
-	// necessary parameter
-	dst   string // resize the image(s) where save to
-	width uint   // resize image's width
-
-	// advanced parameter
-	format   string // resize to image format
-	quality  int    // resize image quality percent
-	interp   uint   //the provided interpolation functions support
-	height   uint   // resize image's height
-	waterImg string // append an water image
-	verbose  bool   // show detailed message
-
-	// file filter
+	// image filter
 	name string // use a shell pattern to detect a matching image file name
 	size string // use image file size to filter, the size of file's unit bytes, support `k` (1024 bytes),`M`(1024k)
+	// resize parameter
+	format  string // resize to image format
+	quality int    // resize image quality percent
+	interp  uint   // the provided interpolation functions support
+	width   uint   // resize image's width
+	height  uint   // resize image's height
+	// image save
+	dst string // resize the image(s) where save to
+	// debug
+	verbose bool // show detailed message
 }
 
 func init() {
 	// http url image
-	flag.StringVar(&cmd.url, "url", "", "the image's http(s) url to be resize, image resource(url|urls|img|imgs|dir) at least need set one")
-	flag.StringVar(&cmd.urls, "urls", "", "image's http(s) urls to be resize, separated by ','")
-	flag.StringVar(&cmd.crawlerUrl, "crawler_url", "", "the crawler url used by girls download the http images and resize only matched image files")
-
-	// local image
-	flag.StringVar(&cmd.img, "img", "", "the local image file which to be resize")
-	flag.StringVar(&cmd.imgs, "imgs", "", "local image files which to be resize, separated by ','")
-	flag.StringVar(&cmd.scanDir, "dir", "", "scan the dir where image inside to be resize")
-
-	// necessary parameter
-	flag.StringVar(&cmd.dst, "dst", "/tmp/goimgrz", "the output dir where image after resize store")
-	flag.UintVar(&cmd.width, "width", 800, "set resize image's width, default width and height is 0 represent origin image")
-
-	// advanced parameter
-	flag.IntVar(&cmd.quality, "quality", 75, "set resize image's quality percent")
-	flag.UintVar(&cmd.interp, "interp", 0, "the provided interpolation functions support (from fast to slow execution time), 0:NearestNeighbor,1:Bilinear,2:Bicubic,3:MitchellNetravali,4:Lanczos2,5:Lanczos3")
-	flag.UintVar(&cmd.height, "height", 0, "set resize image's height")
-	flag.StringVar(&cmd.waterImg, "water_img", "", "append water image")
-	flag.StringVar(&cmd.format, "format", "", "image format resize to(support jpg|png|gif)")
-	flag.BoolVar(&cmd.verbose, "verbose", false, "append water image")
-
+	flag.StringVar(&cmd.url,"url", "", "")
+	flag.StringVar(&cmd.urls, "urls", "", "")
+	flag.StringVar(&cmd.img, "img", "", "")
+	flag.StringVar(&cmd.imgs, "imgs", "", "")
+	flag.StringVar(&cmd.scanDir, "scdir", "", "")
 	// filter
-	flag.StringVar(&cmd.name, "name", "*", "using shell pattern to filter image, like *.png")
-	flag.StringVar(&cmd.size, "size", "", "using file size to filter image, like +200k")
+	flag.StringVar(&cmd.name, "name", "*", "")
+	flag.StringVar(&cmd.size, "size", "", "")
+	// resize setting
+	flag.UintVar(&cmd.width, "w", 0, "")
+	flag.UintVar(&cmd.height, "h", 0, "")
+	flag.StringVar(&cmd.format, "cfmt", "", "")
+	flag.UintVar(&cmd.interp, "itp", 0, "")
+	flag.IntVar(&cmd.quality, "qty", 75, "")
+	// resize saving
+	flag.StringVar(&cmd.dst, "dst", "/tmp/goimgrz", "")
+	flag.BoolVar(&cmd.verbose, "v", false, "")
 }
 
+var usage = `Usage: goimgrz [options...]
+
+Goimgrz version %s, a simple image resizing tool that supports web or local images.
+https://github.com/tkstorm/goimgrz
+
+Options:
+Resize image source:
+-url	Web images to be resize, image source(url|urls|img|imgs|dir) at least need set one
+-urls	Multiple web images to be resize, separated by ','
+-img	Local images to be resize	
+-imgs	Multiple local images to be resize, separated by ','
+-scdir	Scanned file image file directory
+
+Filter:
+-name	Using shell pattern to filter image, like *.png
+-size	Using file size to filter image, like +200k
+
+Resize Setting:
+-w	Set resize image's width, default width is 0 represent origin image
+-h	Set resize image's height, default height is 0 represent origin image 
+-cfmt	Convert image output format(jpg|png|gif)
+-itp	The provided interpolation functions support (from fast to slow execution time).
+	0:NearestNeighbor,1:Bilinear,2:Bicubic,3:MitchellNetravali,4:Lanczos2,5:Lanczos3
+-qty 	Set resize image's quality percent
+
+Image Saving:
+-dst	The output dir
+
+Other:
+-v	Verbose message
+`
+
 func main() {
+	flag.Usage = func() {
+		fmt.Fprint(os.Stderr, fmt.Sprintf(usage, version))
+	}
 	flag.Parse()
 
 	// create gir task
