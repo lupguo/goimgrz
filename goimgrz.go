@@ -1,8 +1,8 @@
-package main
+package goimgrz
 
 import (
 	"flag"
-	"github.com/tkstorm/goimgrz"
+	"github.com/tkstorm/goimgrz/imgrz"
 	"log"
 )
 
@@ -67,7 +67,7 @@ func main() {
 	flag.Parse()
 
 	// create gir task
-	setting := &goimgrz.Setting{
+	setting := &imgrz.Setting{
 		Dst:    cmd.dst,
 		Qty:    cmd.quality,
 		Width:  cmd.width,
@@ -75,10 +75,10 @@ func main() {
 		Interp: cmd.interp,
 		Format: cmd.format,
 	}
-	gt := goimgrz.NewTask(setting)
+	gt := imgrz.NewTask(setting)
 
 	// setting gir filter && relative parameters
-	gt.SetFilter(goimgrz.NewFilter(cmd.name, cmd.size))
+	gt.SetFilter(imgrz.NewFilter(cmd.name, cmd.size))
 	gt.SetVerbose(cmd.verbose)
 
 	// report in background synchronously

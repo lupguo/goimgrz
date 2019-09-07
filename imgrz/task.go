@@ -1,4 +1,4 @@
-package goimgrz
+package imgrz
 
 import (
 	"log"
