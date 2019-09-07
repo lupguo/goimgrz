@@ -1,4 +1,10 @@
-Already Fix Content:
+### Fix Content [2019/09/07]:
+
+#### Code
+- [x] Adjust the project file directory, refer to `hey` project.
+- [x] Change the Command help tips show method.
+
+### Fix Content [2019/06/22]:
 
 #### Code
 - [x] package name
