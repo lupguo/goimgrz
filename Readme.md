@@ -26,7 +26,7 @@ Please note: the toolkit may continue to make major changes until version 0.1
 
 ## 2. Install
 ```
-go get -v github.com/tkstorm/goimgrz/cmd/goimgrz
+go get -u github.com/tkstorm/goimgrz
 ```
 
 ## 3. Quick Start

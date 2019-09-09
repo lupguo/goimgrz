@@ -17,8 +17,8 @@ func TestLocImage_ResizeTo(t *testing.T) {
 		{"./testdata/gopher2018.png", &Setting{Dst: dst, Interp: 2, Qty: 75, Width: 800, Height: 200}, true},
 		{"./testdata/gopher2018.png", &Setting{Dst: dst, Interp: 3, Qty: 75, Width: 400}, true},
 		{"./testdata/gopher2018.png", &Setting{Dst: dst, Interp: 4, Qty: 75}, true},
-		{"./testdata/gopher2018.png", &Setting{Dst: dst, Interp: 5, Qty: 75, Format:"jpeg"}, true},
-		{"./testdata/gopher2018.png", &Setting{Dst: dst, Interp: 0, Qty: 75, Format:"gif"}, true},
+		{"./testdata/gopher2018.png", &Setting{Dst: dst, Interp: 5, Qty: 75, Format: "jpeg"}, true},
+		{"./testdata/gopher2018.png", &Setting{Dst: dst, Interp: 0, Qty: 75, Format: "gif"}, true},
 		{"./testdata/IMG_2489.JPG", &Setting{Dst: dst, Interp: 0, Format: "png"}, true},
 		{"./testdata/not_exits.jpg", &Setting{}, false},
 	}
@@ -49,8 +49,8 @@ func TestHttpImage_ResizeTo(t *testing.T) {
 		{"https://cdn-images-1.medium.com/max/2400/1*pV0ZUbW1dURx-_YOWu1mzQ.png", &Setting{Dst: dst, Interp: 2, Qty: 75, Width: 800, Height: 200}, true},
 		{"https://cdn-images-1.medium.com/max/2400/1*pV0ZUbW1dURx-_YOWu1mzQ.png", &Setting{Dst: dst, Interp: 3, Qty: 75, Width: 400}, true},
 		{"https://cdn-images-1.medium.com/max/2400/1*pV0ZUbW1dURx-_YOWu1mzQ.png", &Setting{Dst: dst, Interp: 4, Qty: 75}, true},
-		{"https://cdn-images-1.medium.com/max/2400/1*pV0ZUbW1dURx-_YOWu1mzQ.png", &Setting{Dst: dst, Interp: 5, Qty: 75, Format:"jpeg"}, true},
-		{"https://cdn-images-1.medium.com/max/2400/1*pV0ZUbW1dURx-_YOWu1mzQ.png", &Setting{Dst: dst, Interp: 0, Qty: 75, Format:"gif"}, true},
+		{"https://cdn-images-1.medium.com/max/2400/1*pV0ZUbW1dURx-_YOWu1mzQ.png", &Setting{Dst: dst, Interp: 5, Qty: 75, Format: "jpeg"}, true},
+		{"https://cdn-images-1.medium.com/max/2400/1*pV0ZUbW1dURx-_YOWu1mzQ.png", &Setting{Dst: dst, Interp: 0, Qty: 75, Format: "gif"}, true},
 		{"https://uidesign.gbtcdn.com/GB/image/2019/20190617_10732/New_B.jpg?imbypass=false", &Setting{Dst: dst, Interp: 0, Format: "png"}, true},
 		{"https://uidesign.gbtcdn.com/GB/image/2019/20190617_10732/New_B.jpg?imbypass=false", &Setting{}, false},
 	}

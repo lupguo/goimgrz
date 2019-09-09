@@ -35,7 +35,7 @@ var cmd struct {
 
 func init() {
 	// http url image
-	flag.StringVar(&cmd.url,"url", "", "")
+	flag.StringVar(&cmd.url, "url", "", "")
 	flag.StringVar(&cmd.urls, "urls", "", "")
 	flag.StringVar(&cmd.img, "img", "", "")
 	flag.StringVar(&cmd.imgs, "imgs", "", "")
@@ -61,7 +61,8 @@ https://github.com/tkstorm/goimgrz
 
 Options:
 Resize image source:
--url	Web images to be resize, image source(url|urls|img|imgs|dir) at least need set one
+-url	Web images to be resize, 
+	image source(url|urls|img|imgs|scdir) at least need set one
 -urls	Multiple web images to be resize, separated by ','
 -img	Local images to be resize	
 -imgs	Multiple local images to be resize, separated by ','

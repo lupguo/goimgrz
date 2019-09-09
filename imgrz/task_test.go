@@ -13,7 +13,7 @@ func TestTask_DoResize(t *testing.T) {
 		"https://uidesign.gbtcdn.com/GB/image/2019/20190612_10650/1190x420.gif?imbypass=false",
 	}
 	// local file
-	localImgs  := []string{
+	localImgs := []string{
 		"./testdata/IMG_2489.JPG",
 	}
 

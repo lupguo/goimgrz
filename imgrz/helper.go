@@ -95,7 +95,7 @@ forloop:
 // HumDSLimit("2000", "+1k") represent whether 1000 bytes >= 1*1024 bytes
 // 	+/-: >= or < , 1k: 1k=1024bytes
 func HumDSLimit(size string, limit string) (bool, error) {
-	if len(size) ==0 || len(limit) == 0 {
+	if len(size) == 0 || len(limit) == 0 {
 		return false, errors.New("size or size limit is empty")
 	}
 
@@ -131,15 +131,15 @@ func HumDSLimit(size string, limit string) (bool, error) {
 }
 
 // GetFmtBasename get the new image basename based on the specified target image format and the name of the original image
-func GetFmtBasename(basename, format string) string  {
+func GetFmtBasename(basename, format string) string {
 	// assigned format
 	switch format {
 	case "png":
 		fallthrough
 	case "gif":
-		basename = strings.Replace(basename, path.Ext(basename),"."+format, -1)
+		basename = strings.Replace(basename, path.Ext(basename), "."+format, -1)
 	case "jpeg", "jpg":
-		basename = strings.Replace(basename, path.Ext(basename),".jpg", -1)
+		basename = strings.Replace(basename, path.Ext(basename), ".jpg", -1)
 	}
 	return basename
 }
