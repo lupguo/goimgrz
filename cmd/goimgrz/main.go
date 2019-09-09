@@ -76,15 +76,15 @@ Resize Setting:
 -w	Set resize image's width, default width is 0 represent origin image
 -h	Set resize image's height, default height is 0 represent origin image 
 -cfmt	Convert image output format(jpg|png|gif)
--itp	The provided interpolation functions support (from fast to slow execution time).
+-itp	The provided interpolation functions support (from fast to slow execution time, default is 0).
 	0:NearestNeighbor,1:Bilinear,2:Bicubic,3:MitchellNetravali,4:Lanczos2,5:Lanczos3
--qty 	Set resize image's quality percent
+-qty 	Set resize image's quality percent (Default is 75)
 
 Image Saving:
 -dst	The output dir
 
 Other:
--v	Verbose message
+-v	Verbose message (Default is false)
 `
 
 func main() {

@@ -35,13 +35,13 @@ go get -u github.com/tkstorm/goimgrz
 
 #### 3.1.1. resize single local image with special width
 ```
-$ goimgrz -img ./testdata/gopher2018.png -width 400
+$ goimgrz -img ./testdata/gopher2018.png -w 400
 2019/06/25 16:10:16 resize ok: /tmp/goimgrz/gopher2018.png (inputW=400,inputH=0)
 ```
 
 #### 3.1.2. resize local dir images to dst dir
 ```
-$ goimgrz -dir ./testdata -width 500  -dst /tmp/goimgrz/500
+$ goimgrz -scdir ./testdata -w 500  -dst /tmp/goimgrz/500
 2019/06/25 16:11:22 resize ok: /tmp/goimgrz/500/gopher2018.png (inputW=500,inputH=0)
 2019/06/25 16:11:22 resize ok: /tmp/goimgrz/500/web_bg.jpg (inputW=500,inputH=0)
 2019/06/25 16:11:23 resize ok: /tmp/goimgrz/500/IMG_2489.JPG (inputW=500,inputH=0)
@@ -49,7 +49,7 @@ $ goimgrz -dir ./testdata -width 500  -dst /tmp/goimgrz/500
 
 #### 3.1.3. resize http url image
 ```
-$ goimgrz -url https://cdn-images-1.medium.com/max/1600/1\*n1kWgo0dPS80uoE430hqSQ.jpeg -width 300
+$ goimgrz -url https://cdn-images-1.medium.com/max/1600/1\*n1kWgo0dPS80uoE430hqSQ.jpeg -w 300
 2019/06/22 18:42:17 resize ok: /tmp/1*n1kWgo0dPS80uoE430hqSQ.jpeg (inputW=300,inputH=0)
 ```
 
@@ -66,7 +66,7 @@ $ goimgrz -urls https://cdn-images-1.medium.com/max/1600/1\*k74qnaAcJd3bzRj7PnLI
 
 #### 3.2.1. resize setting quality (only jpeg has effect)
 ```
-$ goimgrz -img ./testdata/IMG_2489.JPG -width 500 -quality 85
+$ goimgrz -img ./testdata/IMG_2489.JPG -w 500 -qty 85
 2019/06/25 16:14:28 resize ok: /tmp/goimgrz/IMG_2489.JPG (inputW=500,inputH=0)
 ```
 
@@ -81,7 +81,7 @@ The provided interpolation functions support (from fast to slow execution time)
 - 5: Lanczos3
 
 ```
-$ goimgrz -img ./testdata/IMG_2489.JPG -width 500 -interp 2
+$ goimgrz -img ./testdata/IMG_2489.JPG -w 500 -itp 2
 2019/06/25 16:16:40 resize ok: /tmp/goimgrz/IMG_2489.JPG (inputW=500,inputH=0)
 ```
 
@@ -95,61 +95,57 @@ total 4480
 -rw-r--r--@ 1 Terry  staff        106K  9 10  2018 gopher2018.png
 -rw-r--r--@ 1 Terry  staff        186K  4  2 15:04 web_bg.jpg
 
-$ goimgrz -dir ./testdata -size +1M
+$ goimgrz -scdir ./testdata -size +1M
 2019/06/23 23:02:20 resize ok: /tmp/IMG_2489.JPG (inputW=300,inputH=0)
 
-$ goimgrz -dir ./testdata -size +1M -verbose
+$ goimgrz -scdir ./testdata -size +1M -v
 2019/06/25 16:20:44 resize fail: error(31): not satisfy, limit size:+1M, file size:108873
 2019/06/25 16:20:44 resize fail: error(31): not satisfy, limit size:+1M, file size:190717
 2019/06/25 16:20:45 resize ok: /tmp/goimgrz/IMG_2489.JPG (inputW=0,inputH=0)
 
-$ goimgrz -dir ./testdata -size -200k
+$ goimgrz -scdir ./testdata -size -200k
 2019/06/23 23:14:45 resize ok: /tmp/gopher2018.png (inputW=300,inputH=0)
 2019/06/23 23:14:45 resize ok: /tmp/web_bg.jpg (inputW=300,inputH=0)
 ```
 
 #### 3.3.2. filter by name (using shell pattern)
 ```
-$ goimgrz -dir ./testdata -size -1M -name '*/*.png'
+$ goimgrz -scdir ./testdata -size -1M -name '*/*.png'
 2019/06/23 23:08:22 resize ok: /tmp/gopher2018.png (inputW=300,inputH=0)
 ```
 
-## 4. Cmmand Helper
+## 4. Command Helper
 ```
-$ goimgrz -h
-Usage of goimgrz:
-  -crawler_url string
-      the crawler url used by girls download the http images and resize only matched image files
-  -dir string
-      scan the dir where image inside to be resize
-  -dst string
-      the output dir where image after resize store (default "/tmp/goimgrz")
-  -format string
-      image format resize to(support jpg|png|gif)
-  -height uint
-      set resize image's height
-  -img string
-      the local image file which to be resize
-  -imgs string
-      local image files which to be resize, separated by ','
-  -interp uint
-      the provided interpolation functions support (from fast to slow execution time), 0:NearestNeighbor,1:Bilinear,2:Bicubic,3:MitchellNetravali,4:Lanczos2,5:Lanczos3
-  -name string
-      using shell pattern to filter image, like *.png (default "*")
-  -quality int
-      set resize image's quality percent (default 75)
-  -size string
-      using file size to filter image, like +200k
-  -url string
-      the image's http(s) url to be resize, image resource(url|urls|img|imgs|dir) at least need set one
-  -urls string
-      image's http(s) urls to be resize, separated by ','
-  -verbose
-      append water image
-  -water_img string
-      append water image
-  -width uint
-      set resize image's width, default width and height is 0 represent origin image (default 800)
-```
+$ goimgrz --help
+Usage: goimgrz [options...]
 
-The `-crawler_url`、`water_img` is developing (unavailable now）, it will coming soon
+Goimgrz version 0.0.1, a simple image resizing tool that supports web or local images.
+https://github.com/tkstorm/goimgrz
+
+Options:
+Resize image source:
+-url	Web images to be resize,
+	image source(url|urls|img|imgs|scdir) at least need set one
+-urls	Multiple web images to be resize, separated by ','
+-img	Local images to be resize
+-imgs	Multiple local images to be resize, separated by ','
+-scdir	Scanned file image file directory
+
+Filter:
+-name	Using shell pattern to filter image, like *.png
+-size	Using file size to filter image, like +200k
+
+Resize Setting:
+-w	Set resize image's width, default width is 0 represent origin image
+-h	Set resize image's height, default height is 0 represent origin image
+-cfmt	Convert image output format(jpg|png|gif)
+-itp	The provided interpolation functions support (from fast to slow execution time).
+	0:NearestNeighbor,1:Bilinear,2:Bicubic,3:MitchellNetravali,4:Lanczos2,5:Lanczos3
+-qty 	Set resize image's quality percent
+
+Image Saving:
+-dst	The output dir
+
+Other:
+-v	Verbose message
+```
